@@ -13,12 +13,13 @@ import imutils
 import face_alignment
 from skimage import io
 
+from Face_Occlusion import VR_patch
 
 # this face detection is from https://github.com/1adrianb/face-alignment/blob/master/README.md
 
 face_detector_kwargs = {
     # increase_min_score_thresh to minimise the chances of picking up 2 faces
-    "min_score_thresh" : 0.92,
+    "min_score_thresh" : 0.7,
     "min_suppression_threshold" : 0.3
 }
 # video: 50 frame 4-10  38 frame 15-20 31-35  37 frame 0-10  16 frame 0 - 4+ more
@@ -55,7 +56,7 @@ class AffectNet(Dataset):
 
         self.frame_keys = []
         self.keys = []
-        for i in range(6,7):
+        for i in range(150):
 
             with open(root_path + f"{i+1:03d}" + "/" + f"{i+1:03d}" + ".json", "r") as read_file:
                 data = json.load(read_file)
@@ -86,6 +87,9 @@ class AffectNet(Dataset):
 
     def __getitem__(self, index):
         # here index refers to the image code eg: '338/f60cd0dabca4c9cfcf2649cc99934d2570bddfd491d4420dac98bf49.jpg'
+        ignore_bounding_box = False
+        bounding_box = None
+
         key = self.frame_keys[index]
         #print(self.keys)
         #print(self.frame_keys)
@@ -126,8 +130,16 @@ class AffectNet(Dataset):
         predicted_landmarks = np.array(predicted_landmarks).squeeze()
         print(predicted_landmarks.shape)
         # if it predicts 2 bounding boxes as it detects 2 faces
-        if predicted_landmarks.shape != (68,2):
+
+        if len(predicted_landmarks.shape) > 2:
             predicted_landmarks = predicted_landmarks[1,:,:]
+
+        if predicted_landmarks.shape == ():
+            ignore_bounding_box = True
+
+        if ignore_bounding_box == False:
+            VR_dimension = [20, 10]
+            occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
 
 
 
@@ -135,21 +147,24 @@ class AffectNet(Dataset):
             # uses ground truth landmarks
             #bounding_box = [landmarks.min(axis=0)[0], landmarks.min(axis=0)[1],
                             #landmarks.max(axis=0)[0], landmarks.max(axis=0)[1]]
-
             # uses predicted landmarks
-            bounding_box = [predicted_landmarks.min(axis=0)[0], predicted_landmarks.min(axis=0)[1],
-                            predicted_landmarks.max(axis=0)[0], predicted_landmarks.max(axis=0)[1]]
+            if ignore_bounding_box == False:
+                bounding_box = [predicted_landmarks.min(axis=0)[0], predicted_landmarks.min(axis=0)[1],
+                                predicted_landmarks.max(axis=0)[0], predicted_landmarks.max(axis=0)[1]]
 
+                image, landmarks = self.transform_image_shape(occluded_image, bb= bounding_box)
+            else:
+                image, landmarks = self.transform_image_shape(image, bb=bounding_box)
 
-
-            image, landmarks = self.transform_image_shape(image, bb= bounding_box)
             # Fix for PyTorch currently not supporting negative stric
             image = np.ascontiguousarray(image)
+
 
             #img = Image.fromarray(image, 'RGB')
             #img.show()
             #sys.exit()
         ########################
+
 
 
         if self.transform_image is not None:

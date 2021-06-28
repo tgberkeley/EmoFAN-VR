@@ -13,7 +13,7 @@ from torchvision import transforms
 from emonet.models import EmoNet
 #from emonet.data import AffectNet
 from AFEW_VA_dataloader import AffectNet
-from AffWild2_dataloader import AffectNet
+#from AffWild2_dataloader import AffectNet
 from emonet.data_augmentation import DataAugmentor
 from emonet.metrics import CCC, PCC, RMSE, SAGR, ACC
 from emonet.evaluation import evaluate, evaluate_flip
@@ -45,7 +45,7 @@ transform_image_shape_flip = DataAugmentor(image_size, image_size, mirror=True, 
 #print(f'Testing the model on {n_expression} emotional classes')
 
 print('Loading the data')
-test_dataset_no_flip = AffectNet(root_path='AffWild2_Validation_Frames/', subset=subset, n_expression=n_expression,
+test_dataset_no_flip = AffectNet(root_path='AFEW_VA_1_to_3/', subset=subset, n_expression=n_expression,
                          transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 #test_dataset_flip = AffectNet(root_path='~/Documents/emonet-master/pickles/', subset=subset, n_expression=n_expression,
@@ -69,6 +69,7 @@ net.eval()
 print(f'Testing on {subset}-set')
 print(f'------------------------')
 #evaluate_flip(net, test_dataloader_no_flip, test_dataloader_flip, device=device, metrics_valence_arousal=metrics_valence_arousal, metrics_expression=metrics_expression)
+
 # divide should be true if we are dealing with AFEW_VA and false if dealing with AffWild2
-evaluate(net, test_dataloader_no_flip, device=device, divide=False, metrics_valence_arousal=metrics_valence_arousal, metrics_expression=metrics_expression)
+evaluate(net, test_dataloader_no_flip, device=device, divide=True, metrics_valence_arousal=metrics_valence_arousal, metrics_expression=metrics_expression)
 
