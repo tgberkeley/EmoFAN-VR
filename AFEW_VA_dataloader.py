@@ -110,7 +110,9 @@ class AffectNet(Dataset):
         valence = torch.tensor([float(sample_data['valence'])], dtype=torch.float32)
         arousal = torch.tensor([float(sample_data['arousal'])], dtype=torch.float32)
 
-        #landmarks = sample_data['landmarks']
+        landmarks = sample_data['landmarks']
+        
+        predicted_landmarks = landmarks
 
 
         # will need to change this to sample_data['landmarks'] to use our own landmarks instead of emofans
@@ -124,22 +126,22 @@ class AffectNet(Dataset):
         image = np.ascontiguousarray(image)
 
 
-        predicted_landmarks = fa.get_landmarks(image)
+        #predicted_landmarks = fa.get_landmarks(image)
 
         # still need to fix if finds 2 faces
-        predicted_landmarks = np.array(predicted_landmarks).squeeze()
-        print(predicted_landmarks.shape)
+        #predicted_landmarks = np.array(predicted_landmarks).squeeze()
+        #print(predicted_landmarks.shape)
         # if it predicts 2 bounding boxes as it detects 2 faces
 
-        if len(predicted_landmarks.shape) > 2:
-            predicted_landmarks = predicted_landmarks[1,:,:]
+        #if len(predicted_landmarks.shape) > 2:
+        #    predicted_landmarks = predicted_landmarks[1,:,:]
 
-        if predicted_landmarks.shape == ():
-            ignore_bounding_box = True
+        #if predicted_landmarks.shape == ():
+        #    ignore_bounding_box = True
 
-        if ignore_bounding_box == False:
-            VR_dimension = [20, 10]
-            occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
+        #if ignore_bounding_box == False:
+        #    VR_dimension = [20, 10]
+        #    occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
 
 
 
@@ -153,7 +155,7 @@ class AffectNet(Dataset):
                                 predicted_landmarks.max(axis=0)[0], predicted_landmarks.max(axis=0)[1]]
                 
                 # change image to occluded image here when want occlusions included
-                image, landmarks = self.transform_image_shape(occluded_image, bb= bounding_box) 
+                image, landmarks = self.transform_image_shape(image, bb= bounding_box) 
             else:
                 image, landmarks = self.transform_image_shape(image, bb=bounding_box)
 
