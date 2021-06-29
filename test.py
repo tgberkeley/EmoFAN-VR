@@ -43,7 +43,7 @@ flipping_indices = [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 26
 transform_image_shape_flip = DataAugmentor(image_size, image_size, mirror=True, shape_mirror_indx=flipping_indices, flipping_probability=1.0)
 
 #print(f'Testing the model on {n_expression} emotional classes')
-
+#test
 print('Loading the data')
 test_dataset_no_flip = AffectNet(root_path='AFEW_VA_1_to_3/', subset=subset, n_expression=n_expression,
                          transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
