@@ -137,9 +137,9 @@ class AffectNet(Dataset):
         if predicted_landmarks.shape == ():
             ignore_bounding_box = True
 
-        #if ignore_bounding_box == False:
-        #    VR_dimension = [20, 10]
-        #    occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
+        if ignore_bounding_box == False:
+            VR_dimension = [20, 10]
+            occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
 
 
 
@@ -153,7 +153,7 @@ class AffectNet(Dataset):
                                 predicted_landmarks.max(axis=0)[0], predicted_landmarks.max(axis=0)[1]]
                 
                 # change image to occluded image here when want occlusions included
-                image, landmarks = self.transform_image_shape(image, bb= bounding_box) 
+                image, landmarks = self.transform_image_shape(occluded_image, bb= bounding_box) 
             else:
                 image, landmarks = self.transform_image_shape(image, bb=bounding_box)
 
