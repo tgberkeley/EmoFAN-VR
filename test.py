@@ -60,7 +60,7 @@ state_dict_path = Path(__file__).parent.joinpath('pretrained', f'emonet_{n_expre
 print(f'Loading the model from {state_dict_path}.')
 state_dict = torch.load(str(state_dict_path), map_location='cpu')
 state_dict = {k.replace('module.',''):v for k,v in state_dict.items()}
-net = EmoNet(n_expression=n_expression) #.to(device)  #put back on the device when plug into gpu
+net = EmoNet(n_expression=n_expression).to(device)  #put back on the device when plug into gpu
 net.load_state_dict(state_dict, strict=False)
 net.eval()
 
