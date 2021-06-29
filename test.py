@@ -45,7 +45,7 @@ transform_image_shape_flip = DataAugmentor(image_size, image_size, mirror=True, 
 #print(f'Testing the model on {n_expression} emotional classes')
 #test
 print('Loading the data')
-test_dataset_no_flip = AffectNet(root_path='AFEW_VA_1_to_3/', subset=subset, n_expression=n_expression,
+test_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AFEW_VA_1_to_3/', subset=subset, n_expression=n_expression,
                          transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 #test_dataset_flip = AffectNet(root_path='~/Documents/emonet-master/pickles/', subset=subset, n_expression=n_expression,
