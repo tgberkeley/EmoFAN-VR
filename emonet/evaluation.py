@@ -23,7 +23,7 @@ def evaluate(net, dataloader, device, divide=False, metrics_valence_arousal=None
 
     for index, data in enumerate(dataloader):
         print(index)
-        images = data['image']#.to(device)
+        images = data['image'].to(device)
         valence = data.get('valence', None)
         arousal = data.get('arousal', None)
         #expression = data.get('expression', None)
@@ -110,7 +110,7 @@ def evaluate_flip(net, dataloader_no_flip, dataloader_flip, device, metrics_vale
 
     #Loop without flip
     for index, data in enumerate(dataloader_no_flip):
-        images = data['image']#.to(device)
+        images = data['image'].to(device)
         valence = data.get('valence', None)
         arousal = data.get('arousal', None)
         expression = data.get('expression', None)
