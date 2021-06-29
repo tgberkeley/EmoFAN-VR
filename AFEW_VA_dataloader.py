@@ -56,7 +56,7 @@ class AffectNet(Dataset):
 
         self.frame_keys = []
         self.keys = []
-        for i in range(150):
+        for i in range(600):
 
             with open(root_path + f"{i+1:03d}" + "/" + f"{i+1:03d}" + ".json", "r") as read_file:
                 data = json.load(read_file)
@@ -137,9 +137,9 @@ class AffectNet(Dataset):
         if predicted_landmarks.shape == ():
             ignore_bounding_box = True
 
-        if ignore_bounding_box == False:
-            VR_dimension = [20, 10]
-            occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
+        #if ignore_bounding_box == False:
+        #    VR_dimension = [20, 10]
+        #    occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
 
 
 
@@ -151,8 +151,9 @@ class AffectNet(Dataset):
             if ignore_bounding_box == False:
                 bounding_box = [predicted_landmarks.min(axis=0)[0], predicted_landmarks.min(axis=0)[1],
                                 predicted_landmarks.max(axis=0)[0], predicted_landmarks.max(axis=0)[1]]
-
-                image, landmarks = self.transform_image_shape(occluded_image, bb= bounding_box)
+                
+                # change image to occluded image here when want occlusions included
+                image, landmarks = self.transform_image_shape(image, bb= bounding_box) 
             else:
                 image, landmarks = self.transform_image_shape(image, bb=bounding_box)
 
