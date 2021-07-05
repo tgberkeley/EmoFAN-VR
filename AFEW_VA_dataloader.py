@@ -25,7 +25,7 @@ face_detector_kwargs = {
 # video: 50 frame 4-10  38 frame 15-20 31-35  37 frame 0-10  16 frame 0 - 4+ more
 # issue is we can get out ie two sets of landmarks for two different faces and no way to decipher
 # which is the right one + eg AFEW video 16 ground truths look at i believe the wrong face
-fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cuda',
+fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cpu',
                                   flip_input=False, face_detector='blazeface',
                                   face_detector_kwargs=face_detector_kwargs)
 
@@ -33,7 +33,7 @@ fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cuda
 
 class AffectNet(Dataset):
 
-    def __init__(self, root_path, subset='test',
+    def __init__(self, root_path, subset=None,
                  transform_image_shape=None, transform_image=None,
                  n_expression=5, verbose=1, cleaned_set=True):
         self.root_path = Path(root_path).expanduser()
@@ -56,7 +56,15 @@ class AffectNet(Dataset):
 
         self.frame_keys = []
         self.keys = []
-        for i in range(600):
+        if subset == "train":
+            film_start = 0
+            film_end = 500
+
+        if subset == "test":
+            film_start = 500
+            film_end = 600
+
+        for i in range(film_start, film_end):
 
             with open(root_path + f"{i+1:03d}" + "/" + f"{i+1:03d}" + ".json", "r") as read_file:
                 data = json.load(read_file)
@@ -108,36 +116,37 @@ class AffectNet(Dataset):
         image_file = image_file + '.png'
 
         valence = torch.tensor([float(sample_data['valence'])], dtype=torch.float32)
+        # so that we get valence and arousal between -1 and 1
+        valence = valence / 10
         arousal = torch.tensor([float(sample_data['arousal'])], dtype=torch.float32)
+        arousal = arousal / 10
 
-        landmarks = sample_data['landmarks']
-        
-        predicted_landmarks = landmarks
+        #landmarks = sample_data['landmarks']
 
 
         # will need to change this to sample_data['landmarks'] to use our own landmarks instead of emofans
         #landmarks = sample_data['landmarks_fan']
 
-        if isinstance(predicted_landmarks, list):
-            predicted_landmarks = np.array(predicted_landmarks)
+        #if isinstance(landmarks, list):
+        #landmarks = np.array(landmarks)
 
 
         image = io.imread(image_file)
         image = np.ascontiguousarray(image)
 
 
-        #predicted_landmarks = fa.get_landmarks(image)
+        predicted_landmarks = fa.get_landmarks(image)
 
         # still need to fix if finds 2 faces
-        #predicted_landmarks = np.array(predicted_landmarks).squeeze()
+        predicted_landmarks = np.array(predicted_landmarks).squeeze()
         #print(predicted_landmarks.shape)
-        # if it predicts 2 bounding boxes as it detects 2 faces
+        # if it predicts 2 or more bounding boxes as it detects 2 or more faces
 
-        #if len(predicted_landmarks.shape) > 2:
-        #    predicted_landmarks = predicted_landmarks[1,:,:]
+        if len(predicted_landmarks.shape) > 2:
+            predicted_landmarks = predicted_landmarks[1,:,:]
 
-        #if predicted_landmarks.shape == ():
-        #    ignore_bounding_box = True
+        if predicted_landmarks.shape == ():
+            ignore_bounding_box = True
 
         if ignore_bounding_box == False:
             VR_dimension = [20, 10]
@@ -153,9 +162,8 @@ class AffectNet(Dataset):
             if ignore_bounding_box == False:
                 bounding_box = [predicted_landmarks.min(axis=0)[0], predicted_landmarks.min(axis=0)[1],
                                 predicted_landmarks.max(axis=0)[0], predicted_landmarks.max(axis=0)[1]]
-                
-                # change image to occluded image here when want occlusions included
-                image, landmarks = self.transform_image_shape(occluded_image, bb= bounding_box) 
+
+                image, landmarks = self.transform_image_shape(occluded_image, bb= bounding_box)
             else:
                 image, landmarks = self.transform_image_shape(image, bb=bounding_box)
 
@@ -173,6 +181,13 @@ class AffectNet(Dataset):
         if self.transform_image is not None:
             image = self.transform_image(image)
 
+        # img = image.mul(255).byte()
+        # img = img.cpu().numpy().transpose((1, 2, 0))
+        # img = Image.fromarray(img, 'RGB')
+        # img.show()
+        #
+
 
         return dict(valence=valence, arousal=arousal, expression=1, image=image, au=[])
+
 
