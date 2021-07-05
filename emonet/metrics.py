@@ -1,4 +1,12 @@
 import numpy as np
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.autograd import Variable
+
+
+
+
 
 
 def ACC(ground_truth, predictions):
@@ -68,3 +76,66 @@ def ICC(labels, predictions):
         icc[i] = (BMS - EMS)/(BMS + EMS)
 
     return icc
+
+
+
+####### my stuff from here
+
+
+
+# good one :
+#Custom Losses: CCC (with PCC inside it)
+# https://github.com/wtomin/Multitask-Emotion-Recognition-with-Incomplete-Labels/blob/3d18c3f1eea6f93522d00e7a58d669e1051c3610/Multitask-CNN-RNN/utils/model_utils.py#L93
+
+class CCCLoss(nn.Module):
+    def __init__(self, digitize_num, range=[-1, 1]):
+        super(CCCLoss, self).__init__()
+        self.digitize_num =  digitize_num
+        self.range = range
+        self.eps = 0.000000001 # used to prevent a nan return when e.g. all the gts are 0
+        if self.digitize_num !=0:
+            bins = np.linspace(*self.range, num= self.digitize_num)
+            #self.bins = Variable(torch.as_tensor(bins, dtype = torch.float32).cuda()).view((1, -1))
+            self.bins = Variable(torch.as_tensor(bins, dtype=torch.float32)).view((1, -1))
+    def forward(self, x, y):
+        # the target y is continuous value (BS, )
+        # the input x is either continuous value (BS, ) or probability output(digitized)
+        y = y.view(-1)
+
+        if self.digitize_num !=1:
+            x = F.softmax(x, dim=-1)
+            x = (self.bins * x).sum(-1) # expectation
+        x = x.view(-1)
+
+        vx = x - torch.mean(x) + self.eps
+        vy = y - torch.mean(y)
+        rho =  torch.sum(vx * vy) / (torch.sqrt(torch.sum(torch.pow(vx, 2))) * torch.sqrt(torch.sum(torch.pow(vy, 2))))
+        x_m = torch.mean(x) + self.eps
+        y_m = torch.mean(y)
+        x_s = torch.std(x) + self.eps
+        y_s = torch.std(y)
+        ccc = 2*rho*x_s*y_s/(torch.pow(x_s, 2) + torch.pow(y_s, 2) + torch.pow(x_m - y_m, 2))
+
+        return ccc, rho
+
+#CCC_loss = CCCLoss(digitize_num=1)
+
+
+
+
+def CCC_score(x, y):
+    vx = x - np.mean(x)
+    vy = y - np.mean(y)
+    rho = np.sum(vx * vy) / (np.sqrt(np.sum(vx**2)) * np.sqrt(np.sum(vy**2)))
+    x_m = np.mean(x)
+    y_m = np.mean(y)
+    x_s = np.std(x)
+    y_s = np.std(y)
+    ccc = 2*rho*x_s*y_s/(x_s**2 + y_s**2 + (x_m - y_m)**2)
+    return ccc, rho
+
+
+
+
+
+
