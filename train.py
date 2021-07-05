@@ -44,7 +44,7 @@ metrics_expression = {'ACC':ACC}
 
 learning_rate = 0.001
 CCC_Loss = CCCLoss(digitize_num=1)
-num_epochs = 3
+num_epochs = 10
 
 
 
@@ -76,7 +76,7 @@ transform_image_shape_no_flip = DataAugmentor(image_size, image_size)
 
 
 print('Loading the data')
-train_dataset_no_flip = AffectNet(root_path='AFEW_VA_1_to_3/', subset='train', n_expression=n_expression,
+train_dataset_no_flip = AffectNet(root_path='AFEW_VA_', subset='train', n_expression=n_expression,
                          transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 test_dataset_no_flip = AffectNet(root_path='AFEW_VA_1_to_3/', subset='test', n_expression=n_expression,
