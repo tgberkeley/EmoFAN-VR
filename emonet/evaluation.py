@@ -17,16 +17,19 @@ def evaluate_metrics(ground_truth, predictions, metrics, verbose=True, print_tex
     return results
 
 # Test loop
-def evaluate(net, dataloader, device, divide=False, metrics_valence_arousal=None, metrics_expression=None, metrics_au=None, verbose=True, print_tex=False):
+def evaluate(net, dataloader, device, metrics_valence_arousal=None, metrics_expression=None, metrics_au=None, verbose=True, print_tex=False):
     
     net.eval()
 
+
     for index, data in enumerate(dataloader):
-        print(index)
-        images = data['image'].to(device)
+
+        images = data['image']#.to(device)
         valence = data.get('valence', None)
         arousal = data.get('arousal', None)
-        #expression = data.get('expression', None)
+        expression = data.get('expression', None)
+
+
 
         with torch.no_grad():
             out = net(images)
@@ -71,14 +74,11 @@ def evaluate(net, dataloader, device, divide=False, metrics_valence_arousal=None
         arousal_pred = np.clip(arousal_pred, -1.0,1.0)
 
         #Squeeze if valence_gts is shape (N,1)
+        valence_gts = valence_gts.numpy()
+        arousal_gts = arousal_gts.numpy()
         valence_gts = np.squeeze(valence_gts)
         arousal_gts = np.squeeze(arousal_gts)
 
-        # only do this step if using AFEW_VA
-        # for AffWild2 they are already between -1 and 1
-        if divide == True:
-            valence_gts = valence_gts / 10
-            arousal_gts = arousal_gts / 10
 
     #if metrics_expression is not None:
     #    if verbose:
@@ -104,13 +104,18 @@ def evaluate(net, dataloader, device, divide=False, metrics_valence_arousal=None
     else:
             return valence_results, arousal_results
 
+
+
+
+
+
 def evaluate_flip(net, dataloader_no_flip, dataloader_flip, device, metrics_valence_arousal=None, metrics_expression=None, metrics_au=None, verbose=True, print_tex=False):
     
     net.eval()
 
     #Loop without flip
     for index, data in enumerate(dataloader_no_flip):
-        images = data['image'].to(device)
+        images = data['image']#.to(device)
         valence = data.get('valence', None)
         arousal = data.get('arousal', None)
         expression = data.get('expression', None)

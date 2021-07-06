@@ -31,14 +31,17 @@ class AffectNet(Dataset):
             raise ValueError(f'n_expression should be either 5 or 8, but got n_expression={n_expression}')
         self.n_expression = n_expression
 
-        self.pickle_path = self.root_path.joinpath(f'{subset}_fullpath.pkl')
-        with open(self.pickle_path, 'br') as f:
-            data = pickle.load(f)
-        self.data = data
+        #self.pickle_path = self.root_path.joinpath('pickles/',f'{subset}_fullpath.pkl')
+        #with open(self.pickle_path, 'br') as f:
+            #data = pickle.load(f)
+        #self.data = data
+        #print(self.data['421/2864f1dd2361dee9c627e42ec71d484c4425625e0045d2176245adad.jpg'])
         #print(self.data.keys())
-        print(self.data['338/f60cd0dabca4c9cfcf2649cc99934d2570bddfd491d4420dac98bf49.jpg'])
+        #print(self.data['338/f60cd0dabca4c9cfcf2649cc99934d2570bddfd491d4420dac98bf49.jpg'])
         #print(self.data)
-
+        a = np.load('AffectNet_val_set/annotations/421_lnd.npy')
+        print(a)
+#'expression': '8', 'valence': '0.120983', 'arousal': '-0.464576',
         # the keys are the image names (name.ext)
         self.keys = []
         self.skipped = {'other':[], 'pt_pt_error':[], 'expression':[], 'cleaned':[]}

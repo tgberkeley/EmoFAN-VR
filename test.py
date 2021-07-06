@@ -8,12 +8,14 @@ from torch.utils.data import DataLoader
 from torch.utils.data.sampler import WeightedRandomSampler
 from torchvision import transforms 
 
+import sys
 
 
 from emonet.models import EmoNet
 #from emonet.data import AffectNet
-from AFEW_VA_dataloader import AffectNet
+#from AFEW_VA_dataloader import AffectNet
 #from AffWild2_dataloader import AffectNet
+from AffectNet_dataloader import AffectNet
 from emonet.data_augmentation import DataAugmentor
 from emonet.metrics import CCC, PCC, RMSE, SAGR, ACC
 from emonet.evaluation import evaluate, evaluate_flip
@@ -31,7 +33,7 @@ batch_size = 32
 n_workers = 0
 device = 'cuda:0'
 image_size = 256
-subset = 'test'
+subset = 'val'
 metrics_valence_arousal = {'CCC':CCC, 'PCC':PCC, 'RMSE':RMSE, 'SAGR':SAGR}
 metrics_expression = {'ACC':ACC}
 
@@ -43,10 +45,10 @@ flipping_indices = [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 26
 transform_image_shape_flip = DataAugmentor(image_size, image_size, mirror=True, shape_mirror_indx=flipping_indices, flipping_probability=1.0)
 
 #print(f'Testing the model on {n_expression} emotional classes')
-#test
+
 print('Loading the data')
-test_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AFEW_VA_all/', subset=subset, n_expression=n_expression,
-                         transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
+test_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AffectNet_val_set/', subset=subset, n_expression=n_expression,
+                                 transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 #test_dataset_flip = AffectNet(root_path='~/Documents/emonet-master/pickles/', subset=subset, n_expression=n_expression,
 #                         transform_image_shape=transform_image_shape_flip, transform_image=transform_image)
@@ -59,8 +61,10 @@ state_dict_path = Path(__file__).parent.joinpath('pretrained', f'emonet_{n_expre
 
 print(f'Loading the model from {state_dict_path}.')
 state_dict = torch.load(str(state_dict_path), map_location='cpu')
+
 state_dict = {k.replace('module.',''):v for k,v in state_dict.items()}
-net = EmoNet(n_expression=n_expression).to(device)  #put back on the device when plug into gpu
+
+net = EmoNet(n_expression=n_expression) #.to(device)  #put back on the device when plug into gpu
 net.load_state_dict(state_dict, strict=False)
 net.eval()
 
@@ -70,6 +74,6 @@ print(f'Testing on {subset}-set')
 print(f'------------------------')
 #evaluate_flip(net, test_dataloader_no_flip, test_dataloader_flip, device=device, metrics_valence_arousal=metrics_valence_arousal, metrics_expression=metrics_expression)
 
-# divide should be true if we are dealing with AFEW_VA and false if dealing with AffWild2
-evaluate(net, test_dataloader_no_flip, device=device, divide=True, metrics_valence_arousal=metrics_valence_arousal, metrics_expression=metrics_expression)
+
+evaluate(net, test_dataloader_no_flip, device=device, metrics_valence_arousal=metrics_valence_arousal, metrics_expression=metrics_expression)
 
