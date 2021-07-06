@@ -16,14 +16,9 @@ from PIL import Image
 
 from emonet.models import EmoNet
 #from emonet.data import AffectNet
-<<<<<<< HEAD
 #from AFEW_VA_dataloader import AffectNet
 #from AffWild2_dataloader import AffectNet
 from AffectNet_dataloader import AffectNet
-=======
-from AFEW_VA_dataloader import AffectNet
-#from AffWild2_dataloader import AffectNet
->>>>>>> d11ed55a3b0199906119aa0146fdc8451c598192
 from emonet.data_augmentation import DataAugmentor
 from emonet.metrics import CCC, PCC, RMSE, SAGR, ACC
 from emonet.evaluation import evaluate, evaluate_flip
@@ -48,15 +43,9 @@ subset = 'train'
 metrics_valence_arousal = {'CCC':CCC, 'PCC':PCC, 'RMSE':RMSE, 'SAGR':SAGR}
 metrics_expression = {'ACC':ACC}
 
-<<<<<<< HEAD
 learning_rate = 0.0005
 CCC_Loss = CCCLoss(digitize_num=1)
 num_epochs = 3
-=======
-learning_rate = 0.001
-CCC_Loss = CCCLoss(digitize_num=1)
-num_epochs = 10
->>>>>>> d11ed55a3b0199906119aa0146fdc8451c598192
 
 
 
@@ -88,11 +77,7 @@ transform_image_shape_no_flip = DataAugmentor(image_size, image_size)
 
 
 print('Loading the data')
-<<<<<<< HEAD
 train_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AffectNet_val_set/', subset='val', n_expression=n_expression,
-=======
-train_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/train_set/', subset='train', n_expression=n_expression,
->>>>>>> d11ed55a3b0199906119aa0146fdc8451c598192
                          transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 test_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AffectNet_val_set/', subset='test', n_expression=n_expression,
@@ -202,7 +187,6 @@ torch.save(net.state_dict(), os.path.join(model_dir, 'model.pth'))
 
 print('\nFinished TRAINING.')
 
-<<<<<<< HEAD
 
 # If want to load a pretrained model of my own
 #state_dict_path = Path(__file__).parent.joinpath('output','model','model.pth')
@@ -214,19 +198,6 @@ print('\nFinished TRAINING.')
 
 #net = EmoNet(n_expression=n_expression).to(device)
 #net.load_state_dict(state_dict, strict=False)
-=======
-#
-# # If want to load a pretrained model of my own
-# state_dict_path = Path(__file__).parent.joinpath('output','model','model.pth')
-#
-# print(f'Loading the model from {state_dict_path}.')
-# state_dict = torch.load(str(state_dict_path), map_location='cpu')
-#
-# state_dict = {k.replace('module.',''):v for k,v in state_dict.items()}
-#
-# net = EmoNet(n_expression=n_expression).to(device)
-# net.load_state_dict(state_dict, strict=False)
->>>>>>> d11ed55a3b0199906119aa0146fdc8451c598192
 
 
 
@@ -283,9 +254,6 @@ print('+ TESTING', f'\tCCC Valence: {CCC_valence}, \tPCC Valence: {PCC_valence},
 print(f'\tCCC Arousal: {CCC_arousal}, \tPCC Arousal: {PCC_arousal}, \tRMSE Arousal: {RMSE_arousal}')
 
 print('\nFinished TESTING.')
-<<<<<<< HEAD
 
 
 evaluate(net, test_dataloader, device=device, metrics_valence_arousal=metrics_valence_arousal, metrics_expression=metrics_expression)
-=======
->>>>>>> d11ed55a3b0199906119aa0146fdc8451c598192
