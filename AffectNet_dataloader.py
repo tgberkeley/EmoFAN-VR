@@ -38,7 +38,7 @@ fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cpu'
 
 all_data = {}
 
-all_files = os.listdir("AffectNet_val_small/images/")
+all_files = os.listdir("/vol/bitbucket/tg220/data/AffectNet_val_set/images/")
 
 
 all_files.remove(".DS_Store")
@@ -47,7 +47,7 @@ for file in all_files:
 
     image_name = os.path.splitext(file)[0]
 
-    file_path = "AffectNet_val_small/annotations/" + image_name
+    file_path = "/vol/bitbucket/tg220/data/AffectNet_val_set/annotations/" + image_name
 
     arousal = np.load(file_path+'_aro.npy')
     valence = np.load(file_path+'_val.npy')
@@ -58,7 +58,7 @@ for file in all_files:
 
 
 
-    image_file = "AffectNet_val_set/images/" + file
+    image_file = "/vol/bitbucket/tg220/data/AffectNet_val_set/images/" + file
     image = io.imread(image_file)
     image = np.ascontiguousarray(image)
     predicted_landmarks = fa.get_landmarks(image)
@@ -113,7 +113,7 @@ class AffectNet(Dataset):
         ignore_bounding_box = False
         bounding_box = None
         key = self.image_keys[index]
-        #print(key)
+        print(key)
 
         sample_image = self.all_data[key]
 
