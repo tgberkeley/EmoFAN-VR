@@ -41,7 +41,9 @@ all_data = {}
 all_files = os.listdir("/vol/bitbucket/tg220/data/AffectNet_val_set/images/")
 
 
-all_files.remove(".DS_Store")
+if ".DS_Store" in all_files:
+  all_files.remove(".DS_Store")
+
 
 for file in all_files:
 
