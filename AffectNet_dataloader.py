@@ -104,7 +104,7 @@ class AffectNet(Dataset):
         ignore_bounding_box = False
         bounding_box = None
         key = self.image_keys[index]
-        #print(key)
+        print(key)
 
         sample_image = self.all_data[key]
 
