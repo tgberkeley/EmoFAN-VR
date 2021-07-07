@@ -45,7 +45,7 @@ metrics_expression = {'ACC':ACC}
 
 learning_rate = 0.0005
 CCC_Loss = CCCLoss(digitize_num=1)
-num_epochs = 4
+num_epochs = 6
 
 
 
@@ -183,7 +183,7 @@ for epoch in range(1, num_epochs + 1):
     print(f"RMSE Loss: {RMSE_loss_train}")
 
 
-torch.save(net.state_dict(), os.path.join(model_dir, 'model_4.pth'))
+torch.save(net.state_dict(), os.path.join(model_dir, 'model_6.pth'))
 
 print('\nFinished TRAINING.')
 
