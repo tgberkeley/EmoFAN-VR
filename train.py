@@ -45,7 +45,7 @@ metrics_expression = {'ACC':ACC}
 
 learning_rate = 0.0005
 CCC_Loss = CCCLoss(digitize_num=1)
-num_epochs = 3
+num_epochs = 4
 
 
 
@@ -183,7 +183,7 @@ for epoch in range(1, num_epochs + 1):
     print(f"RMSE Loss: {RMSE_loss_train}")
 
 
-torch.save(net.state_dict(), os.path.join(model_dir, 'model.pth'))
+torch.save(net.state_dict(), os.path.join(model_dir, 'model_4.pth'))
 
 print('\nFinished TRAINING.')
 
@@ -256,4 +256,4 @@ print(f'\tCCC Arousal: {CCC_arousal}, \tPCC Arousal: {PCC_arousal}, \tRMSE Arous
 print('\nFinished TESTING.')
 
 
-evaluate(net, test_dataloader, device=device, metrics_valence_arousal=metrics_valence_arousal, metrics_expression=metrics_expression)
+#evaluate(net, test_dataloader, device=device, metrics_valence_arousal=metrics_valence_arousal, metrics_expression=metrics_expression)
