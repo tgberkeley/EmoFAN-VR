@@ -114,90 +114,90 @@ print("Total number of parameters in the EmoFan: {}".format(params))
 print('\n')
 
 
-net.train()
+# net.train()
 
-optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
-
-
-total_loss_train = []
-CCC_loss_train = []
-PCC_loss_train = []
-RMSE_loss_train = []
+# optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
 
 
-print('START TRAINING...')
-for epoch in range(1, num_epochs + 1):
-
-    total_loss_epoch = 0
-    CCC_loss_epoch = 0
-    PCC_loss_epoch = 0
-    RMSE_loss_epoch = 0
-    # Training
-    for batch_idx, batch_samples in enumerate(train_dataloader):
-        image = batch_samples['image'].to(device)
-        valence = batch_samples['valence'].to(device)
-        valence = valence.squeeze()
-        arousal = batch_samples['arousal'].to(device)
-        arousal = arousal.squeeze()
-        optimizer.zero_grad()
-        prediction = net(image)
+# total_loss_train = []
+# CCC_loss_train = []
+# PCC_loss_train = []
+# RMSE_loss_train = []
 
 
-        # maybe look to use shake–shake regularization coefficients α, β and γ
+# print('START TRAINING...')
+# for epoch in range(1, num_epochs + 1):
 
-        # remember to change to cuda in loss class
-
-
-        CCC_valence, PCC_valence = CCC_Loss(valence, prediction['valence'])
-        CCC_arousal, PCC_arousal = CCC_Loss(arousal, prediction['arousal'])
-
-        loss_PCC = 1 - ((PCC_valence + PCC_arousal) / 2)
-        loss_CCC = 1 - ((CCC_valence + CCC_arousal) / 2)
-
-        loss_RMSE = F.mse_loss(valence, prediction['valence']) + F.mse_loss(arousal, prediction['arousal'])
-
-        total_loss = loss_CCC + loss_PCC + loss_RMSE
-        total_loss.backward()
-
-        optimizer.step()
-
-        total_loss_epoch += total_loss.item()
-        CCC_loss_epoch += loss_CCC.item()
-        PCC_loss_epoch += loss_PCC.item()
-        RMSE_loss_epoch += loss_RMSE.item()
+#     total_loss_epoch = 0
+#     CCC_loss_epoch = 0
+#     PCC_loss_epoch = 0
+#     RMSE_loss_epoch = 0
+#     # Training
+#     for batch_idx, batch_samples in enumerate(train_dataloader):
+#         image = batch_samples['image'].to(device)
+#         valence = batch_samples['valence'].to(device)
+#         valence = valence.squeeze()
+#         arousal = batch_samples['arousal'].to(device)
+#         arousal = arousal.squeeze()
+#         optimizer.zero_grad()
+#         prediction = net(image)
 
 
+#         # maybe look to use shake–shake regularization coefficients α, β and γ
 
-    total_loss_train.append(total_loss_epoch)
-    CCC_loss_train.append(CCC_loss_epoch)
-    PCC_loss_train.append(PCC_loss_epoch)
-    RMSE_loss_train.append(RMSE_loss_epoch)
+#         # remember to change to cuda in loss class
+
+
+#         CCC_valence, PCC_valence = CCC_Loss(valence, prediction['valence'])
+#         CCC_arousal, PCC_arousal = CCC_Loss(arousal, prediction['arousal'])
+
+#         loss_PCC = 1 - ((PCC_valence + PCC_arousal) / 2)
+#         loss_CCC = 1 - ((CCC_valence + CCC_arousal) / 2)
+
+#         loss_RMSE = F.mse_loss(valence, prediction['valence']) + F.mse_loss(arousal, prediction['arousal'])
+
+#         total_loss = loss_CCC + loss_PCC + loss_RMSE
+#         total_loss.backward()
+
+#         optimizer.step()
+
+#         total_loss_epoch += total_loss.item()
+#         CCC_loss_epoch += loss_CCC.item()
+#         PCC_loss_epoch += loss_PCC.item()
+#         RMSE_loss_epoch += loss_RMSE.item()
 
 
 
-    print('+ TRAINING \tEpoch: {} \tLoss: {:.6f}'.format(epoch, total_loss_epoch),
-          f'\tCCC: {CCC_loss_epoch}, \tPCC: {PCC_loss_epoch}, \tRMSE Loss: {RMSE_loss_epoch}')
-    print(f"Total Loss: {total_loss_train}")
-    print(f"CCC Loss: {CCC_loss_train}")
-    print(f"PCC Loss: {PCC_loss_train}")
-    print(f"RMSE Loss: {RMSE_loss_train}")
+#     total_loss_train.append(total_loss_epoch)
+#     CCC_loss_train.append(CCC_loss_epoch)
+#     PCC_loss_train.append(PCC_loss_epoch)
+#     RMSE_loss_train.append(RMSE_loss_epoch)
 
 
-torch.save(net.state_dict(), os.path.join(model_dir, 'model_8.pth'))
 
-print('\nFinished TRAINING.')
+#     print('+ TRAINING \tEpoch: {} \tLoss: {:.6f}'.format(epoch, total_loss_epoch),
+#           f'\tCCC: {CCC_loss_epoch}, \tPCC: {PCC_loss_epoch}, \tRMSE Loss: {RMSE_loss_epoch}')
+#     print(f"Total Loss: {total_loss_train}")
+#     print(f"CCC Loss: {CCC_loss_train}")
+#     print(f"PCC Loss: {PCC_loss_train}")
+#     print(f"RMSE Loss: {RMSE_loss_train}")
+
+
+# torch.save(net.state_dict(), os.path.join(model_dir, 'model_8.pth'))
+
+# print('\nFinished TRAINING.')
 
 
 # If want to load a pretrained model of my own
-#state_dict_path = Path(__file__).parent.joinpath('output','model','model.pth')
+# state_dict_path = Path(__file__).parent.joinpath('output','model','model.pth')
 
-#print(f'Loading the model from {state_dict_path}.')
-#state_dict = torch.load(str(state_dict_path), map_location='cpu')
+# print(f'Loading the model from {state_dict_path}.')
+# state_dict = torch.load(str(state_dict_path), map_location='cpu')
 
-#state_dict = {k.replace('module.',''):v for k,v in state_dict.items()}
+# state_dict = {k.replace('module.',''):v for k,v in state_dict.items()}
 
-#net = EmoNet(n_expression=n_expression).to(device)
-#net.load_state_dict(state_dict, strict=False)
+# net = EmoNet(n_expression=n_expression).to(device)
+# net.load_state_dict(state_dict, strict=False)
 
 
 
