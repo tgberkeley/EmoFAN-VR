@@ -86,7 +86,7 @@ test_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AffectNet_
 
 
 
-train_dataloader = DataLoader(train_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
+#train_dataloader = DataLoader(train_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
 
 test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
 
