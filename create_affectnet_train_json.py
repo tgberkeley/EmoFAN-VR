@@ -23,7 +23,7 @@ root_path = "/vol/bitbucket/tg220/data/train_set/"
 all_data = {}
 
 all_files = os.listdir(root_path + 'images/')
-
+print(len(all_files))
 
 if ".DS_Store" in all_files:
     all_files.remove(".DS_Store")
