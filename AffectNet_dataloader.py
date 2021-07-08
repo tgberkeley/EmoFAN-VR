@@ -36,49 +36,6 @@ fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cpu'
 
 
 
-all_data = {}
-
-all_files = os.listdir("/vol/bitbucket/tg220/data/AffectNet_val_set/images/")
-
-
-all_files.remove(".DS_Store")
-
-for file in all_files:
-
-    image_name = os.path.splitext(file)[0]
-
-    file_path = "/vol/bitbucket/tg220/data/AffectNet_val_set/annotations/" + image_name
-
-    arousal = np.load(file_path+'_aro.npy')
-    valence = np.load(file_path+'_val.npy')
-    expression = np.load(file_path+'_exp.npy')
-
-    landmarks = np.load(file_path+'_lnd.npy')
-    landmarks = np.reshape(landmarks, (-1, 2))
-
-
-
-    image_file = "/vol/bitbucket/tg220/data/AffectNet_val_set/images/" + file
-    image = io.imread(image_file)
-    image = np.ascontiguousarray(image)
-    predicted_landmarks = fa.get_landmarks(image)
-    predicted_landmarks = np.array(predicted_landmarks).squeeze()
-
-
-    all_data[image_name] = {'valence': valence.item(),
-                            'arousal': arousal.item(),
-                            'expression': expression.item(),
-                            'gt_landmarks': landmarks,
-                            'my_landmarks': predicted_landmarks}
-
-
-
-
-print(len(all_data.keys()))
-
-
-
-
 
 
 class AffectNet(Dataset):
@@ -92,7 +49,41 @@ class AffectNet(Dataset):
         self.transform_image = transform_image
         self.verbose = verbose
 
+        all_data = {}
 
+        all_files = os.listdir(self.root_path.joinpath('images/'))
+
+
+        if ".DS_Store" in all_files:
+            all_files.remove(".DS_Store")
+
+
+        for file in all_files:
+            image_name = os.path.splitext(file)[0]
+
+            file_path = str(self.root_path) + "/annotations/" + image_name
+
+            arousal = np.load(file_path + '_aro.npy')
+            valence = np.load(file_path + '_val.npy')
+            expression = np.load(file_path + '_exp.npy')
+
+            landmarks = np.load(file_path + '_lnd.npy')
+            landmarks = np.reshape(landmarks, (-1, 2))
+
+            image_file = str(self.root_path) + "/images/" + file
+
+            image = io.imread(image_file)
+            image = np.ascontiguousarray(image)
+            predicted_landmarks = fa.get_landmarks(image)
+            predicted_landmarks = np.array(predicted_landmarks).squeeze()
+
+            all_data[image_name] = {'valence': valence.item(),
+                                    'arousal': arousal.item(),
+                                    'expression': expression.item(),
+                                    'gt_landmarks': landmarks,
+                                    'my_landmarks': predicted_landmarks}
+
+        print(len(all_data.keys()))
 
         self.all_data = all_data
 
@@ -176,7 +167,6 @@ class AffectNet(Dataset):
 
 
         return dict(valence=valence, arousal=arousal, expression=1, image=image, au=[])
-
 
 
 
