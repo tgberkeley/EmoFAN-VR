@@ -14,7 +14,7 @@ face_detector_kwargs = {
 # video: 50 frame 4-10  38 frame 15-20 31-35  37 frame 0-10  16 frame 0 - 4+ more
 # issue is we can get out ie two sets of landmarks for two different faces and no way to decipher
 # which is the right one + eg AFEW video 16 ground truths look at i believe the wrong face
-fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cpu',
+fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cuda',
                                   flip_input=False, face_detector='blazeface',
                                   face_detector_kwargs=face_detector_kwargs)
 
@@ -58,6 +58,6 @@ for file in all_files:
                             'my_landmarks': predicted_landmarks}
 
 
-with open('/vol/bitbucket/tg220/data/training_data_affectnet.json', 'w') as fp:
+with open('/vol/bitbucket/tg220/data/training_data_affectnet2.json', 'w') as fp:
     json.dump(all_data, fp, sort_keys=True, indent=4)
 
