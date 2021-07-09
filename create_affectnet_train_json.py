@@ -46,7 +46,9 @@ for file in all_files:
     image_file = str(root_path) + "/images/" + file
 
     image = io.imread(image_file)
-    image = np.ascontiguousarray(image).to(device)
+    image = np.ascontiguousarray(image)
+    transform_image = transforms.Compose([transforms.ToTensor()])
+    image = transform_image(image).to(device)
     predicted_landmarks = fa.get_landmarks(image)
     predicted_landmarks = np.array(predicted_landmarks).squeeze()
     predicted_landmarks = predicted_landmarks.tolist()
