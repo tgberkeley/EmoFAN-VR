@@ -4,7 +4,7 @@ from skimage import io
 import face_alignment
 import json
 
-
+device = 'cuda'
 #### to run some tests on the landmarks
 face_detector_kwargs = {
     # increase_min_score_thresh to minimise the chances of picking up 2 faces
@@ -46,7 +46,7 @@ for file in all_files:
     image_file = str(root_path) + "/images/" + file
 
     image = io.imread(image_file)
-    image = np.ascontiguousarray(image)
+    image = np.ascontiguousarray(image).to(device)
     predicted_landmarks = fa.get_landmarks(image)
     predicted_landmarks = np.array(predicted_landmarks).squeeze()
     predicted_landmarks = predicted_landmarks.tolist()
