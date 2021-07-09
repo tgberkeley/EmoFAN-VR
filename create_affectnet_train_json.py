@@ -3,6 +3,7 @@ import numpy as np
 from skimage import io
 import face_alignment
 import json
+from torchvision import transforms
 
 device = 'cuda'
 #### to run some tests on the landmarks
