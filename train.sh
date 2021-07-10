@@ -12,4 +12,4 @@ TERM=vt100 # or TERM=xterm
 #/usr/bin/nvidia-smi
 #uptime
 echo "Beginning training..."
-python -u /vol/bitbucket/tg220/emotiondetector/emonet_master/train.py
+python -u /vol/bitbucket/tg220/emotiondetector/emonet_master/create_affectnet_train_json.py
