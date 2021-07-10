@@ -138,7 +138,8 @@ for epoch in range(1, num_epochs + 1):
         valence = valence.squeeze()
         arousal = batch_samples['arousal'].to(device)
         arousal = arousal.squeeze()
-
+        expr_to_valence = expr_to_valence.to(device)
+        expr_to_arousal = expr_to_arousal.to(device)
         #val_from_expr = batch_samples['val_from_expr'].to(device)
         #val_from_expr = val_from_expr.squeeze()
         #aro_from_expr = batch_samples['aro_from_expr'].to(device)
