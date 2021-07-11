@@ -215,6 +215,10 @@ print('\nFinished TRAINING.')
 # net = EmoNet(n_expression=n_expression).to(device)
 # net.load_state_dict(state_dict, strict=False)
 
+#33769 6 epochs 0.5 
+#33770 6 epochs 0.6
+
+#last one is github as it is now
 
 print('START TESTING...')
 
