@@ -283,6 +283,8 @@ RMSE_arousal = RMSE(arousal_gts, arousal_pred)
 print('+ TESTING', f'\tCCC Valence: {CCC_valence}, \tPCC Valence: {PCC_valence}, \tRMSE Valence: {RMSE_valence}')
 print(f'\tCCC Arousal: {CCC_arousal}, \tPCC Arousal: {PCC_arousal}, \tRMSE Arousal: {RMSE_arousal}')
 
+print(f"ratio: {ratio}")
+print(f"learning rate: {learning_rate}")
 print('\nFinished TESTING.')
 
 # evaluate(net, test_dataloader, device=device, metrics_valence_arousal=metrics_valence_arousal, metrics_expression=metrics_expression)
