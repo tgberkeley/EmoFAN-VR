@@ -43,7 +43,7 @@ subset = 'train'
 metrics_valence_arousal = {'CCC': CCC, 'PCC': PCC, 'RMSE': RMSE, 'SAGR': SAGR}
 metrics_expression = {'ACC': ACC}
 
-learning_rate = 0.001
+learning_rate = 0.0005
 CCC_Loss = CCCLoss(digitize_num=1)
 num_epochs = 4
 
@@ -115,7 +115,7 @@ expr_to_arousal = torch.tensor([ 0,  0.16, -0.4, 0.88, 0.79,  0.49,  0.78, 0.66]
 softm = nn.Softmax(dim=1)
 
 # this is the ratio between the VA prediction and the prediction out from the expr prediction
-ratio = 0.3  # will run tests varying this number
+ratio = 0.6  # will run tests varying this number
 
 
 total_loss_train = []
@@ -199,7 +199,7 @@ for epoch in range(1, num_epochs + 1):
     print(f"PCC Loss: {PCC_loss_train}")
     print(f"RMSE Loss: {RMSE_loss_train}")
 
-torch.save(net.state_dict(), os.path.join(model_dir, 'model_affectnet_4_epoch_VA_and_expr_ratio_0.3_(0.001).pth'))
+torch.save(net.state_dict(), os.path.join(model_dir, 'model_affectnet_4_epoch_VA_and_expr_ratio_0.6.pth'))
 
 print('\nFinished TRAINING.')
 
