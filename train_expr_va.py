@@ -69,8 +69,8 @@ torch.manual_seed(rnd_seed)  # fix random seed
 #transform_image = transforms.Compose([transforms.ToTensor()])
 # maybe to use these transforms later
 transform_image = transforms.Compose([transforms.RandomHorizontalFlip(),
-                           transforms.RandomAffine(degrees=10, translate=(0.25, 0.25), scale=(0.5, 1)),
-                           transforms.ToTensor()])
+                          transforms.RandomAffine(degrees=10, scale=(0.9, 1.1)),
+                          transforms.ToTensor()])
 transform_image_shape_no_flip = DataAugmentor(image_size, image_size)
 
 # '/vol/bitbucket/tg220/data/AffectNet_val_set/
