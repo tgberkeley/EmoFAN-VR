@@ -46,7 +46,8 @@ metrics_expression = {'ACC': ACC}
 learning_rate = 0.0003
 print(learning_rate)
 CCC_Loss = CCCLoss(digitize_num=1)
-num_epochs = 20
+num_epochs = 14
+
 
 cuda_dev = '0'  # GPU device 0 (can be changed if multiple GPUs are available)
 use_cuda = torch.cuda.is_available()
@@ -67,11 +68,11 @@ if not os.path.exists(model_dir):
 torch.manual_seed(rnd_seed)  # fix random seed
 
 # Create the data loaders
-#transform_image = transforms.Compose([transforms.ToTensor()])
+transform_image = transforms.Compose([transforms.ToTensor()])
 # maybe to use these transforms later
-transform_image = transforms.Compose([transforms.RandomHorizontalFlip(),
-                          transforms.RandomAffine(degrees=10, scale=(0.9, 1.1)),
-                          transforms.ToTensor()])
+#transform_image = transforms.Compose([transforms.RandomHorizontalFlip(),
+#                          transforms.RandomAffine(degrees=10, scale=(0.9, 1.1)),
+#                          transforms.ToTensor()])
 transform_image_shape_no_flip = DataAugmentor(image_size, image_size)
 
 # '/vol/bitbucket/tg220/data/AffectNet_val_set/
@@ -103,16 +104,28 @@ net.load_state_dict(state_dict, strict=False)
 #    print(param_tensor, "\t", net.state_dict()[param_tensor].size())
 
 
+
+for model_block in list(net.children())[10:20]:
+    for param in model_block.parameters():
+        param.requires_grad = True
+
+# put this in a loop to train x num epochs for all 6 variants of freezing
+# -2(only FC layers trained) 18:20 17:20(where we started) 14:20 13:20(both hourglasses not trained) 12:20 6:20(one hourglass not) 5:20(all hourglasses trained)
+# therefore for 18:20 and 19:20 we must have a different loop with setting to false
+# for k,v in net.named_parameters():
+#    print('{}: {}'.format(k, v.requires_grad))
+
+
 params = sum(p.numel() for p in net.parameters() if p.requires_grad)
 print("Total number of parameters in the EmoFan: {}".format(params))
 print('\n')
 
-#for model_block in list(net.children())[:-8]:
-#    for param in model_block.parameters():
-#        param.requires_grad = False
+
 
 
 net.train()
+
+parallel_net = nn.DataParallel(net, gpu_ids = [0,1])
 
 optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
 
@@ -157,8 +170,12 @@ for epoch in range(1, num_epochs + 1):
 
 
         optimizer.zero_grad()
-        prediction = net(image)
-
+        
+        
+        #prediction = net(image)
+        parallel_net = parellel_net.to(device)
+        prediction = parallel_net(image)    
+        
         # pred_expr = prediction['expression']
         # pred_expr_soft = softm(pred_expr)
         #
