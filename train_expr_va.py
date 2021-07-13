@@ -173,7 +173,7 @@ for epoch in range(1, num_epochs + 1):
         
         
         #prediction = net(image)
-        parallel_net = parellel_net.to(device)
+        parallel_net = parallel_net.to(device)
         prediction = parallel_net(image)    
         
         # pred_expr = prediction['expression']
