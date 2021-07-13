@@ -43,9 +43,9 @@ subset = 'train'
 metrics_valence_arousal = {'CCC': CCC, 'PCC': PCC, 'RMSE': RMSE, 'SAGR': SAGR}
 metrics_expression = {'ACC': ACC}
 
-learning_rate = 0.0005
+learning_rate = 0.0003
 CCC_Loss = CCCLoss(digitize_num=1)
-num_epochs = 8
+num_epochs = 20
 
 cuda_dev = '0'  # GPU device 0 (can be changed if multiple GPUs are available)
 use_cuda = torch.cuda.is_available()
@@ -211,9 +211,9 @@ for epoch in range(1, num_epochs + 1):
 
     print('+ TRAINING \tEpoch: {} \tLoss: {:.6f}'.format(epoch, total_loss_epoch),
           f'\tCCC: {CCC_loss_epoch}, \tPCC: {PCC_loss_epoch}, \tRMSE Loss: {RMSE_loss_epoch}')
-    print(f"Total Loss: {total_loss_train}")
+    #print(f"Total Loss: {total_loss_train}")
     print(f"CCC Loss: {CCC_loss_train}")
-    print(f"PCC Loss: {PCC_loss_train}")
+    #print(f"PCC Loss: {PCC_loss_train}")
     print(f"RMSE Loss: {RMSE_loss_train}")
 
     if epoch % 2 == 0:
