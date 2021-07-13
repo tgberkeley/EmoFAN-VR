@@ -125,7 +125,7 @@ print('\n')
 
 net.train()
 
-parallel_net = nn.DataParallel(net, gpu_ids = [0,1])
+parallel_net = nn.DataParallel(net, device_ids=[0,1])
 
 optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
 
