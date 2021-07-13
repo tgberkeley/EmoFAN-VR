@@ -44,6 +44,7 @@ metrics_valence_arousal = {'CCC': CCC, 'PCC': PCC, 'RMSE': RMSE, 'SAGR': SAGR}
 metrics_expression = {'ACC': ACC}
 
 learning_rate = 0.0003
+print(learning_rate)
 CCC_Loss = CCCLoss(digitize_num=1)
 num_epochs = 20
 
@@ -125,14 +126,6 @@ optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
 
 # this is the ratio between the VA prediction and the prediction out from the expr prediction
 #ratio = 0.4  # will run tests varying this number
-
-
-# 1. 4 epochs ratio 0.4 : 33671
-# 2. 4 epochs ratio 0.5 : 33673
-# 3. 4 epochs ratio 0.6 : 33674 round2:out_test_practice33842.out
-# 4. 6 epochs ratio 0.4 : 33675 round2:
-# 5. 6 epochs ratio 0.5 : 33769
-# 6. 6 epochs ratio 0.6 : 33770
 
 
 
