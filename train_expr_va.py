@@ -125,7 +125,7 @@ print('\n')
 
 net.train()
 
-parallel_net = nn.DataParallel(net, device_ids=[0,1])
+#parallel_net = nn.DataParallel(net, device_ids=[0,1])
 
 optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
 
@@ -172,9 +172,9 @@ for epoch in range(1, num_epochs + 1):
         optimizer.zero_grad()
         
         
-        #prediction = net(image)
-        parallel_net = parallel_net.to(device)
-        prediction = parallel_net(image)    
+        prediction = net(image)
+        #parallel_net = parallel_net.to(device)
+        #prediction = parallel_net(image)    
         
         # pred_expr = prediction['expression']
         # pred_expr_soft = softm(pred_expr)
