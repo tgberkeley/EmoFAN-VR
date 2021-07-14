@@ -210,7 +210,7 @@ for epoch in range(1, num_epochs + 1):
 
         loss_RMSE = F.mse_loss(valence, prediction['valence']) + F.mse_loss(arousal, prediction['arousal'])
 
-        total_loss = loss_CCC + loss_PCC + torch.mul(loss_RMSE, 2) + torch.mul(loss_CE, 0.2)
+        total_loss = loss_CCC + loss_PCC + torch.mul(loss_RMSE, 2) + loss_CE
         total_loss.backward()
 
         optimizer.step()
