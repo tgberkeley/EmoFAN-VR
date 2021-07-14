@@ -46,7 +46,7 @@ metrics_expression = {'ACC': ACC}
 learning_rate = 0.0003
 print(learning_rate)
 CCC_Loss = CCCLoss(digitize_num=1)
-num_epochs = 14
+num_epochs = 12
 
 
 cuda_dev = '0'  # GPU device 0 (can be changed if multiple GPUs are available)
@@ -105,9 +105,9 @@ net.load_state_dict(state_dict, strict=False)
 
 
 
-for model_block in list(net.children())[10:20]:
-    for param in model_block.parameters():
-        param.requires_grad = True
+# for model_block in list(net.children())[10:20]:
+#     for param in model_block.parameters():
+#         param.requires_grad = True
 
 # put this in a loop to train x num epochs for all 6 variants of freezing
 # -2(only FC layers trained) 18:20 17:20(where we started) 14:20 13:20(both hourglasses not trained) 12:20 6:20(one hourglass not) 5:20(all hourglasses trained)
@@ -146,6 +146,7 @@ total_loss_train = []
 CCC_loss_train = []
 PCC_loss_train = []
 RMSE_loss_train = []
+CE_loss_train = []
 
 print('START TRAINING...')
 for epoch in range(1, num_epochs + 1):
@@ -154,6 +155,7 @@ for epoch in range(1, num_epochs + 1):
     CCC_loss_epoch = 0
     PCC_loss_epoch = 0
     RMSE_loss_epoch = 0
+    CE_loss_epoch = 0
     # Training
     for batch_idx, batch_samples in enumerate(train_dataloader):
         #print(batch_idx)
@@ -162,6 +164,8 @@ for epoch in range(1, num_epochs + 1):
         valence = valence.squeeze()
         arousal = batch_samples['arousal'].to(device)
         arousal = arousal.squeeze()
+        expression = batch_samples['expression'].to(device)
+        expression = expression.squeeze()
 
         #val_from_expr = batch_samples['val_from_expr'].to(device)
         #val_from_expr = val_from_expr.squeeze()
@@ -173,6 +177,10 @@ for epoch in range(1, num_epochs + 1):
         
         
         prediction = net(image)
+        
+        pred_expr = prediction['expression']
+        loss_CE = F.cross_entropy(pred_expr, expression)
+        
         #parallel_net = parallel_net.to(device)
         #prediction = parallel_net(image)    
         
@@ -202,7 +210,7 @@ for epoch in range(1, num_epochs + 1):
 
         loss_RMSE = F.mse_loss(valence, prediction['valence']) + F.mse_loss(arousal, prediction['arousal'])
 
-        total_loss = loss_CCC + loss_PCC + torch.mul(loss_RMSE, 2)
+        total_loss = loss_CCC + loss_PCC + torch.mul(loss_RMSE, 2) + torch.mul(loss_CE, 0.2)
         total_loss.backward()
 
         optimizer.step()
@@ -211,90 +219,112 @@ for epoch in range(1, num_epochs + 1):
         CCC_loss_epoch += loss_CCC.item()
         PCC_loss_epoch += loss_PCC.item()
         RMSE_loss_epoch += loss_RMSE.item()
+        CE_loss_epoch += loss_CE.item()
+        
 
     total_loss_train.append(total_loss_epoch)
     CCC_loss_train.append(CCC_loss_epoch)
     PCC_loss_train.append(PCC_loss_epoch)
     RMSE_loss_train.append(RMSE_loss_epoch)
+    CE_loss_train.append(CE_loss_epoch)
 
     # after 4 epochs had quite a high RMSE but good CCC and PCC (maybe look to favour RMSE loss more)
 
     print('+ TRAINING \tEpoch: {} \tLoss: {:.6f}'.format(epoch, total_loss_epoch),
-          f'\tCCC: {CCC_loss_epoch}, \tPCC: {PCC_loss_epoch}, \tRMSE Loss: {RMSE_loss_epoch}')
+          f'\tCCC: {CCC_loss_epoch}, \tPCC: {PCC_loss_epoch}, \tRMSE Loss: {RMSE_loss_epoch}',
+          f'\tCE Loss: {CE_loss_epoch}')
     #print(f"Total Loss: {total_loss_train}")
     print(f"CCC Loss: {CCC_loss_train}")
     #print(f"PCC Loss: {PCC_loss_train}")
     print(f"RMSE Loss: {RMSE_loss_train}")
+    print(f"CE Loss: {CE_loss_train}")
 
-    if epoch % 2 == 0:
+    
+    
 
-        torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_with_augmentation.pth'))
+    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_with_CE_loss.pth'))
 
-        print('START TESTING...')
+    print('START TESTING...')
 
-        net.eval()
+    net.eval()
 
-        for index, data in enumerate(test_dataloader):
+    for index, data in enumerate(test_dataloader):
 
-            images = data['image'].to(device)
-            valence = data.get('valence', None)
-            arousal = data.get('arousal', None)
+        images = data['image'].to(device)
+        valence = data.get('valence', None)
+        arousal = data.get('arousal', None)
+        expression = data.get('expression', None)
 
-            valence = np.squeeze(valence.cpu().numpy())
-            arousal = np.squeeze(arousal.cpu().numpy())
+        valence = np.squeeze(valence.cpu().numpy())
+        arousal = np.squeeze(arousal.cpu().numpy())
+        expression = np.squeeze(expression.cpu().numpy())
 
-            with torch.no_grad():
-                out = net(images)
+        with torch.no_grad():
+            out = net(images)
 
-            val = out['valence']
-            ar = out['arousal']
+        val = out['valence']
+        ar = out['arousal']
+        expr = out['expression']
 
-            # pred_expr = out['expression']
-            # pred_expr_soft = softm(pred_expr)
-            #
-            # new_val = torch.mul(pred_expr_soft, expr_to_valence)
-            # expr_val = torch.sum(new_val, dim=1)
-            #
-            # new_aro = torch.mul(pred_expr_soft, expr_to_arousal)
-            # expr_aro = torch.sum(new_aro, dim=1)
-            #
-            # prediction_valence = torch.mul(out['valence'], 1 - ratio) + torch.mul(expr_val, ratio)
-            # prediction_arousal = torch.mul(out['arousal'], 1 - ratio) + torch.mul(expr_aro, ratio)
+        # pred_expr = out['expression']
+        # pred_expr_soft = softm(pred_expr)
+        #
+        # new_val = torch.mul(pred_expr_soft, expr_to_valence)
+        # expr_val = torch.sum(new_val, dim=1)
+        #
+        # new_aro = torch.mul(pred_expr_soft, expr_to_arousal)
+        # expr_aro = torch.sum(new_aro, dim=1)
+        #
+        # prediction_valence = torch.mul(out['valence'], 1 - ratio) + torch.mul(expr_val, ratio)
+        # prediction_arousal = torch.mul(out['arousal'], 1 - ratio) + torch.mul(expr_aro, ratio)
 
-            val = np.squeeze(val.cpu().numpy())
-            ar = np.squeeze(ar.cpu().numpy())
+        val = np.squeeze(val.cpu().numpy())
+        ar = np.squeeze(ar.cpu().numpy())
+        expr = np.squeeze(expr.cpu().numpy())
 
-            if index:
-                valence_pred = np.concatenate([val, valence_pred])
-                arousal_pred = np.concatenate([ar, arousal_pred])
-                valence_gts = np.concatenate([valence, valence_gts])
-                arousal_gts = np.concatenate([arousal, arousal_gts])
+        if index:
+            valence_pred = np.concatenate([val, valence_pred])
+            arousal_pred = np.concatenate([ar, arousal_pred])
+            valence_gts = np.concatenate([valence, valence_gts])
+            arousal_gts = np.concatenate([arousal, arousal_gts])
+            expression_pred = np.concatenate([expr, expression_pred]) 
+            expression_gts = np.concatenate([expression, expression_gts])
 
-            else:
-                valence_pred = val
-                arousal_pred = ar
-                valence_gts = valence
-                arousal_gts = arousal
+        else:
+            valence_pred = val
+            arousal_pred = ar
+            valence_gts = valence
+            arousal_gts = arousal
+            expression_pred = expr
+            expression_gts = expression
+            
 
-        # Clip the predictions
-        valence_pred = np.clip(valence_pred, -1.0, 1.0)
-        arousal_pred = np.clip(arousal_pred, -1.0, 1.0)
+    # Clip the predictions
+    valence_pred = np.clip(valence_pred, -1.0, 1.0)
+    arousal_pred = np.clip(arousal_pred, -1.0, 1.0)
 
-        # Squeeze if valence_gts is shape (N,1)
-        valence_gts = np.squeeze(valence_gts)
-        arousal_gts = np.squeeze(arousal_gts)
+    # Squeeze if valence_gts is shape (N,1)
+    valence_gts = np.squeeze(valence_gts)
+    arousal_gts = np.squeeze(arousal_gts)
+    expression_gts = np.squeeze(expression_gts)
+    
+    expression_pred = np.argmax(expression_pred, axis=1)
+    num_correct = (expression_pred == expression_gts).sum()
+    accuracy = num_correct / len(expression_gts)
 
-        CCC_valence, PCC_valence = CCC_score(valence_gts, valence_pred)
-        RMSE_valence = RMSE(valence_gts, valence_pred)
 
-        CCC_arousal, PCC_arousal = CCC_score(arousal_gts, arousal_pred)
-        RMSE_arousal = RMSE(arousal_gts, arousal_pred)
+    CCC_valence, PCC_valence = CCC_score(valence_gts, valence_pred)
+    RMSE_valence = RMSE(valence_gts, valence_pred)
 
-        print('+ TESTING',
-              f'\tCCC Valence: {CCC_valence}, \tPCC Valence: {PCC_valence}, \tRMSE Valence: {RMSE_valence}')
-        print(f'\tCCC Arousal: {CCC_arousal}, \tPCC Arousal: {PCC_arousal}, \tRMSE Arousal: {RMSE_arousal}')
+    CCC_arousal, PCC_arousal = CCC_score(arousal_gts, arousal_pred)
+    RMSE_arousal = RMSE(arousal_gts, arousal_pred)
 
-        print('\nFinished TESTING.')
+    print('+ TESTING',
+          f'\tCCC Valence: {CCC_valence}, \tPCC Valence: {PCC_valence}, \tRMSE Valence: {RMSE_valence}')
+    print(f'\tCCC Arousal: {CCC_arousal}, \tPCC Arousal: {PCC_arousal}, \tRMSE Arousal: {RMSE_arousal}')
+    print(f'\tAccuracy: {accuracy}')
+
+    print('\nFinished TESTING.')
 
 
 #print('\nFinished TRAINING.')
