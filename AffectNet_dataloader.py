@@ -140,7 +140,7 @@ class AffectNet(Dataset):
 
         valence = torch.tensor([float(sample_image['valence'])], dtype=torch.float32)
         arousal = torch.tensor([float(sample_image['arousal'])], dtype=torch.float32)
-        expression = torch.tensor([float(sample_image['expression'])], dtype=torch.float32)
+        expression = torch.tensor([float(sample_image['expression'])], dtype=torch.long)
 
         val_from_expr = torch.tensor([float(self.expr_to_VA[int(expression)]['valence'])], dtype=torch.float32)
         aro_from_expr = torch.tensor([float(self.expr_to_VA[int(expression)]['arousal'])], dtype=torch.float32)
