@@ -198,7 +198,42 @@ class EmoNet(nn.Module):
             hg_features.append(ll)
 
         hg_features_cat = torch.cat(tuple(hg_features), dim=1)
+            
+          
+        ########## MY CODE ##################
 
+        # here tmp_out has size [32, 68, 64, 64], therefore need to find the irrelevant landmarks and set to zero
+
+        # For dlib’s 68-point facial landmark detector:
+        # FACIAL_LANDMARKS_68_IDXS = [
+        #     ("mouth", (48, 68)),
+        #     ("inner_mouth", (60, 68)),
+        #     x("right_eyebrow", (17, 22)),
+        #     x("left_eyebrow", (22, 27)),
+        #     x("right_eye", (36, 42)),
+        #     x("left_eye", (42, 48)),
+        #     ("nose", (27, 36)),
+        #     ("jaw", (0, 17))
+        # ]
+        # we want indices 0-17, 27-36, 48-68 (remember actually one less due to python)
+        # 46 landmarks for us to use
+        
+        jaw = [x for x in range(17)]
+        nose = [x for x in range(27, 36)]
+        mouth = [x for x in range(48, 68)]
+        occluded_landmarks = jaw + nose + mouth
+
+        indices = torch.tensor(occluded_landmarks)
+
+        tmp_out = torch.index_select(tmp_out, 1, indices)
+
+
+        # this is the size of tmp_out now [32, 46, 64, 64]
+        #print(tmp_out.size())
+
+        ####################################
+        
+           
         if self.attention:
             mask = torch.sum(tmp_out, dim=1, keepdim=True)
             hg_features_cat *= mask
