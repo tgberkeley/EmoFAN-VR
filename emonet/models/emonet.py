@@ -223,7 +223,7 @@ class EmoNet(nn.Module):
         mouth = [x for x in range(48, 68)]
         occluded_landmarks = jaw + nose + mouth
 
-        indices = torch.tensor(occluded_landmarks)
+        indices = torch.tensor(occluded_landmarks).cuda()
 
         tmp_out = torch.index_select(tmp_out, 1, indices)
 
