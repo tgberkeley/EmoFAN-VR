@@ -210,7 +210,7 @@ for epoch in range(1, num_epochs + 1):
 
         loss_RMSE = F.mse_loss(valence, prediction['valence']) + F.mse_loss(arousal, prediction['arousal'])
 
-        total_loss = loss_CCC + loss_PCC + torch.mul(loss_RMSE, 2) + loss_CE
+        total_loss = torch.mul(loss_CCC, 0.2) + torch.mul(loss_PCC, 0.2) + torch.mul(loss_RMSE, 5) + torch.mul(loss_CE, 1.5)
         total_loss.backward()
 
         optimizer.step()
@@ -242,7 +242,7 @@ for epoch in range(1, num_epochs + 1):
     
     
 
-    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_with_CE_loss.pth'))
+    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_with_0.2_0.2_5_1.5_loss.pth'))
 
     print('START TESTING...')
 
