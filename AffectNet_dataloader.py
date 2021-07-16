@@ -106,14 +106,14 @@ class AffectNet(Dataset):
 
         # 0:Neutral 1:Happy 2:Sad 3:Surprise 4:Fear 5:Disgust 6:Anger 7:Contempt
         # (looking at the VA cirlce we really dont cover the bottom half very well at all)
-#         self.expr_to_VA = {0: {'valence': 0, 'arousal': 0},
-#                       1: {'valence': 0.9, 'arousal': 0.16},
-#                       2: {'valence': -0.81, 'arousal': -0.4},
-#                       3: {'valence': 0.42, 'arousal': 0.88},
-#                       4: {'valence': -0.11, 'arousal': 0.79},
-#                       5: {'valence': -0.67, 'arousal': 0.49},
-#                       6: {'valence': -0.41, 'arousal': 0.78},
-#                       7: {'valence': -0.57, 'arousal': 0.66}}
+        self.expr_to_VA = {0: {'valence': 0, 'arousal': 0},
+                      1: {'valence': 0.9, 'arousal': 0.16},
+                      2: {'valence': -0.81, 'arousal': -0.4},
+                      3: {'valence': 0.42, 'arousal': 0.88},
+                      4: {'valence': -0.11, 'arousal': 0.79},
+                      5: {'valence': -0.67, 'arousal': 0.49},
+                      6: {'valence': -0.41, 'arousal': 0.78},
+                      7: {'valence': -0.57, 'arousal': 0.66}}
 
        # self.frame_keys_subset = self.image_keys[130:210]
        # print(len(self.frame_keys_subset))
