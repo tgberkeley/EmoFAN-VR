@@ -131,13 +131,13 @@ optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
 
 # 0:Neutral 1:Happy 2:Sad 3:Surprise 4:Fear 5:Disgust 6:Anger 7:Contempt
 # (looking at the VA cirlce we really dont cover the bottom half very well at all)
-expr_to_valence = torch.tensor([ 0,  0.9, -0.81, 0.42, -0.11,  -0.67,  -0.41, -0.57])
+#expr_to_valence = torch.tensor([ 0,  0.9, -0.81, 0.42, -0.11,  -0.67,  -0.41, -0.57])
 # issue here is that only 1 negative arousal, so will favour more +ve ones
-expr_to_arousal = torch.tensor([ 0,  0.16, -0.4, 0.88, 0.79,  0.49,  0.78, 0.66])
-softm = nn.Softmax(dim=1)
+#expr_to_arousal = torch.tensor([ 0,  0.16, -0.4, 0.88, 0.79,  0.49,  0.78, 0.66])
+#softm = nn.Softmax(dim=1)
 
 # this is the ratio between the VA prediction and the prediction out from the expr prediction
-ratio = 0.4  # will run tests varying this number
+#ratio = 0.4  # will run tests varying this number
 
 
 
@@ -206,16 +206,16 @@ for epoch in range(1, num_epochs + 1):
 
         
 
-        pred_expr_soft = softm(pred_expr)
+#         pred_expr_soft = softm(pred_expr)
         
-        new_val = torch.mul(pred_expr_soft, expr_to_valence)
-        expr_val = torch.sum(new_val, dim=1)
+#         new_val = torch.mul(pred_expr_soft, expr_to_valence)
+#         expr_val = torch.sum(new_val, dim=1)
         
-        new_aro = torch.mul(pred_expr_soft, expr_to_arousal)
-        expr_aro = torch.sum(new_aro, dim=1)
+#         new_aro = torch.mul(pred_expr_soft, expr_to_arousal)
+#         expr_aro = torch.sum(new_aro, dim=1)
         
-        prediction_valence = torch.mul(prediction['valence'], 1 - ratio) + torch.mul(expr_val, ratio)
-        prediction_arousal = torch.mul(prediction['arousal'], 1 - ratio) + torch.mul(expr_aro, ratio)
+#         prediction_valence = torch.mul(prediction['valence'], 1 - ratio) + torch.mul(expr_val, ratio)
+#         prediction_arousal = torch.mul(prediction['arousal'], 1 - ratio) + torch.mul(expr_aro, ratio)
         
 
         # maybe look to use shake–shake regularization coefficients α, β and γ (including between valence and arousal
@@ -223,14 +223,14 @@ for epoch in range(1, num_epochs + 1):
 
         # remember to change to cuda in loss class
 
-        CCC_valence, PCC_valence = CCC_Loss(valence, prediction_valence) #prediction['valence'])
-        CCC_arousal, PCC_arousal = CCC_Loss(arousal, prediction_arousal) #prediction['arousal'])
+        CCC_valence, PCC_valence = CCC_Loss(valence, prediction['valence'])
+        CCC_arousal, PCC_arousal = CCC_Loss(arousal, prediction['arousal'])
 
         loss_PCC = 1 - ((PCC_valence + PCC_arousal) / 2)
         loss_CCC = 1 - ((CCC_valence + CCC_arousal) / 2)
 
-        loss_RMSE = F.mse_loss(valence, prediction_valence) + F.mse_loss(arousal, prediction_arousal) #prediction['arousal'])
-                                                #prediction['valence'])
+        loss_RMSE = F.mse_loss(valence, prediction['valence']) + F.mse_loss(arousal, prediction['arousal'])
+                                                
         total_loss = loss_CCC + loss_PCC + torch.mul(loss_RMSE, 2) +  torch.mul(loss_CE, 0.6)
         total_loss.backward()
 
@@ -260,7 +260,7 @@ for epoch in range(1, num_epochs + 1):
 
 
 
-    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_correct_bb_with_CE_with_expr_to_va_conversion.pth'))
+    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_correct_bb_with_CE.pth'))
 
 
 
