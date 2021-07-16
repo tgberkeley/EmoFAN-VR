@@ -44,7 +44,7 @@ metrics_valence_arousal = {'CCC': CCC, 'PCC': PCC, 'RMSE': RMSE, 'SAGR': SAGR}
 metrics_expression = {'ACC': ACC}
 
 #try this learning rate and then 0.0001
-learning_rate = 0.001
+learning_rate = 0.00005
 print(learning_rate)
 CCC_Loss = CCCLoss(digitize_num=1)
 num_epochs = 20
@@ -209,7 +209,7 @@ for epoch in range(1, num_epochs + 1):
 
         loss_RMSE = F.mse_loss(valence, prediction['valence']) + F.mse_loss(arousal, prediction['arousal'])
 
-        total_loss = loss_CCC + loss_PCC + loss_RMSE 
+        total_loss = loss_CCC + loss_PCC + torch.mul(loss_RMSE, 3) 
         total_loss.backward()
 
         optimizer.step()
@@ -241,7 +241,7 @@ for epoch in range(1, num_epochs + 1):
     
     if epoch % 2 == 0:
 
-        torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_with_occluded_landmarks_0.001lr.pth'))
+        torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_with_occluded_landmarks_0.00005lr_RMSE_times_3.pth'))
 
         print('START TESTING...')
 
