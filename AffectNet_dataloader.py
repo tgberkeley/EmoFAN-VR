@@ -21,7 +21,7 @@ import json
 #### to run some tests on the landmarks
 face_detector_kwargs = {
     # increase_min_score_thresh to minimise the chances of picking up 2 faces
-    "min_score_thresh" : 0.85,
+    "min_score_thresh" : 0.80,
     "min_suppression_threshold" : 0.3
 }
 # video: 50 frame 4-10  38 frame 15-20 31-35  37 frame 0-10  16 frame 0 - 4+ more
@@ -175,10 +175,10 @@ class AffectNet(Dataset):
 
             # uses predicted landmarks
             if ignore_bounding_box == False:
-               bounding_box = [predicted_landmarks.min(axis=0)[0], predicted_landmarks.min(axis=0)[1],
+                bounding_box = [predicted_landmarks.min(axis=0)[0], predicted_landmarks.min(axis=0)[1],
                                predicted_landmarks.max(axis=0)[0], predicted_landmarks.max(axis=0)[1]]
-
                 image, landmarks = self.transform_image_shape(occluded_image, bb= bounding_box)
+                
             else:
                 image, landmarks = self.transform_image_shape(image, bb=bounding_box)
             # Fix for PyTorch currently not supporting negative stric
