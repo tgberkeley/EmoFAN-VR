@@ -175,7 +175,7 @@ for epoch in range(1, num_epochs + 1):
         optimizer.zero_grad()
         prediction = net(image)
 
-        #pred_expr = prediction['expression']
+        pred_expr = prediction['expression']
 
         # printing heat maps relative to occluded image
         # x = 29
@@ -201,7 +201,7 @@ for epoch in range(1, num_epochs + 1):
 
         # binary cross entrpy loss (for discrete emtions)
 
-        #loss_CE = F.cross_entropy(pred_expr, expression)
+        loss_CE = F.cross_entropy(pred_expr, expression)
 
 
         
@@ -231,7 +231,7 @@ for epoch in range(1, num_epochs + 1):
 
         loss_RMSE = F.mse_loss(valence, prediction['valence']) + F.mse_loss(arousal, prediction['arousal'])
 
-        total_loss = loss_CCC + loss_PCC + torch.mul(loss_RMSE, 2) #+  torch.mul(loss_CE, 0.6)
+        total_loss = loss_CCC + loss_PCC + torch.mul(loss_RMSE, 2) +  torch.mul(loss_CE, 0.6)
         total_loss.backward()
 
         optimizer.step()
@@ -240,13 +240,13 @@ for epoch in range(1, num_epochs + 1):
         CCC_loss_epoch += loss_CCC.item()
         PCC_loss_epoch += loss_PCC.item()
         RMSE_loss_epoch += loss_RMSE.item()
-        #CE_loss_epoch += loss_CE.item()
+        CE_loss_epoch += loss_CE.item()
 
     total_loss_train.append(total_loss_epoch)
     CCC_loss_train.append(CCC_loss_epoch)
     PCC_loss_train.append(PCC_loss_epoch)
     RMSE_loss_train.append(RMSE_loss_epoch)
-    #CE_loss_train.append(CE_loss_epoch)
+    CE_loss_train.append(CE_loss_epoch)
 
 
     print('+ TRAINING \tEpoch: {} \tLoss: {:.6f}'.format(epoch, total_loss_epoch),
@@ -256,11 +256,11 @@ for epoch in range(1, num_epochs + 1):
     print(f"CCC Loss: {CCC_loss_train}")
     #print(f"PCC Loss: {PCC_loss_train}")
     print(f"RMSE Loss: {RMSE_loss_train}")
-    #print(f"CE Loss: {CE_loss_train}")
+    print(f"CE Loss: {CE_loss_train}")
 
 
 
-    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_correct_bb.pth'))
+    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_correct_bb_with_CE_with_landmkarks_excluded.pth'))
 
 
 
