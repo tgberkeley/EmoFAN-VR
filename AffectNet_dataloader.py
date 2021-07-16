@@ -91,8 +91,7 @@ class AffectNet(Dataset):
 
         if subset == 'test':
             file = '/vol/bitbucket/tg220/data/affectnet_val_data.json'
-            #file = 'affectnet_val_data.json'
-
+            
 
         with open(file) as read_file:
             all_data = json.load(read_file)
@@ -107,14 +106,14 @@ class AffectNet(Dataset):
 
         # 0:Neutral 1:Happy 2:Sad 3:Surprise 4:Fear 5:Disgust 6:Anger 7:Contempt
         # (looking at the VA cirlce we really dont cover the bottom half very well at all)
-        self.expr_to_VA = {0: {'valence': 0, 'arousal': 0},
-                      1: {'valence': 0.9, 'arousal': 0.16},
-                      2: {'valence': -0.81, 'arousal': -0.4},
-                      3: {'valence': 0.42, 'arousal': 0.88},
-                      4: {'valence': -0.11, 'arousal': 0.79},
-                      5: {'valence': -0.67, 'arousal': 0.49},
-                      6: {'valence': -0.41, 'arousal': 0.78},
-                      7: {'valence': -0.57, 'arousal': 0.66}}
+#         self.expr_to_VA = {0: {'valence': 0, 'arousal': 0},
+#                       1: {'valence': 0.9, 'arousal': 0.16},
+#                       2: {'valence': -0.81, 'arousal': -0.4},
+#                       3: {'valence': 0.42, 'arousal': 0.88},
+#                       4: {'valence': -0.11, 'arousal': 0.79},
+#                       5: {'valence': -0.67, 'arousal': 0.49},
+#                       6: {'valence': -0.41, 'arousal': 0.78},
+#                       7: {'valence': -0.57, 'arousal': 0.66}}
 
        # self.frame_keys_subset = self.image_keys[130:210]
        # print(len(self.frame_keys_subset))
@@ -140,7 +139,7 @@ class AffectNet(Dataset):
 
         valence = torch.tensor([float(sample_image['valence'])], dtype=torch.float32)
         arousal = torch.tensor([float(sample_image['arousal'])], dtype=torch.float32)
-        expression = torch.tensor([float(sample_image['expression'])], dtype=torch.long)
+        expression = torch.tensor([int(sample_image['expression'])], dtype=torch.long)
 
         val_from_expr = torch.tensor([float(self.expr_to_VA[int(expression)]['valence'])], dtype=torch.float32)
         aro_from_expr = torch.tensor([float(self.expr_to_VA[int(expression)]['arousal'])], dtype=torch.float32)
@@ -151,7 +150,7 @@ class AffectNet(Dataset):
         if arousal == -2:
             arousal = 0
 
-        gt_landmarks = sample_image['gt_landmarks']
+        #gt_landmarks = sample_image['gt_landmarks']
         predicted_landmarks = sample_image['my_landmarks']
 
         predicted_landmarks = np.array(predicted_landmarks)
@@ -176,8 +175,8 @@ class AffectNet(Dataset):
 
             # uses predicted landmarks
             if ignore_bounding_box == False:
-            #    bounding_box = [predicted_landmarks.min(axis=0)[0], predicted_landmarks.min(axis=0)[1],
-            #                    predicted_landmarks.max(axis=0)[0], predicted_landmarks.max(axis=0)[1]]
+               bounding_box = [predicted_landmarks.min(axis=0)[0], predicted_landmarks.min(axis=0)[1],
+                               predicted_landmarks.max(axis=0)[0], predicted_landmarks.max(axis=0)[1]]
 
                 image, landmarks = self.transform_image_shape(occluded_image, bb= bounding_box)
             else:
@@ -190,7 +189,8 @@ class AffectNet(Dataset):
             #sys.exit()
         ########################
 
-        image = Image.fromarray(image, 'RGB')
+        #image = Image.fromarray(image, 'RGB')
+        
         if self.transform_image is not None:
             image = self.transform_image(image)
 
