@@ -220,14 +220,14 @@ class EmoNet(nn.Module):
         # we want indices 0-17, 27-36, 48-68 (remember actually one less due to python)
         # 46 landmarks for us to use
         
-#         jaw = [x for x in range(17)]
-#         nose = [x for x in range(27, 36)]
-#         mouth = [x for x in range(48, 68)]
-#         occluded_landmarks = jaw + nose + mouth
+        jaw = [x for x in range(17)]
+        nose = [x for x in range(27, 36)]
+        mouth = [x for x in range(48, 68)]
+        occluded_landmarks = jaw + nose + mouth
 
-#         indices = torch.tensor(occluded_landmarks).cuda()
+        indices = torch.tensor(occluded_landmarks).cuda()
 
-#         tmp_out = torch.index_select(tmp_out, 1, indices)
+        tmp_out = torch.index_select(tmp_out, 1, indices)
 
 
         # this is the size of tmp_out now [32, 46, 64, 64]
