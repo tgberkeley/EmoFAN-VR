@@ -95,6 +95,13 @@ state_dict = torch.load(str(state_dict_path), map_location='cpu')
 
 state_dict = {k.replace('module.', ''): v for k, v in state_dict.items()}
 
+# as have added in the drop out layer
+state_dict['emo_fc_2.4.weight'] = state_dict['emo_fc_2.3.weight']
+del state_dict['emo_fc_2.3.weight']
+state_dict['emo_fc_2.4.bias'] = state_dict['emo_fc_2.3.bias']
+del state_dict['emo_fc_2.3.bias']
+
+
 net = EmoNet(n_expression=n_expression).to(device)
 net.load_state_dict(state_dict, strict=False)
 
@@ -175,7 +182,7 @@ for epoch in range(1, num_epochs + 1):
         optimizer.zero_grad()
         prediction = net(image)
 
-        pred_expr = prediction['expression']
+        #pred_expr = prediction['expression']
 
         # printing heat maps relative to occluded image
         # x = 29
@@ -201,7 +208,7 @@ for epoch in range(1, num_epochs + 1):
 
         # binary cross entrpy loss (for discrete emtions)
 
-        loss_CE = F.cross_entropy(pred_expr, expression)
+        #loss_CE = F.cross_entropy(pred_expr, expression)
 
 
         ### test on it non_occluded images
@@ -238,7 +245,7 @@ for epoch in range(1, num_epochs + 1):
         total = alpha + beta + gamma
 
         total_loss = torch.mul(loss_CCC, alpha/total) + torch.mul(loss_PCC, beta/total) + \
-                     torch.mul(loss_RMSE, gamma/total) +  loss_CE
+                     torch.mul(loss_RMSE, gamma/total) #+  loss_CE
 
         total_loss.backward()
 
@@ -248,13 +255,13 @@ for epoch in range(1, num_epochs + 1):
         CCC_loss_epoch += loss_CCC.item()
         PCC_loss_epoch += loss_PCC.item()
         RMSE_loss_epoch += loss_RMSE.item()
-        CE_loss_epoch += loss_CE.item()
+        #CE_loss_epoch += loss_CE.item()
 
     total_loss_train.append(total_loss_epoch)
     CCC_loss_train.append(CCC_loss_epoch)
     PCC_loss_train.append(PCC_loss_epoch)
     RMSE_loss_train.append(RMSE_loss_epoch)
-    CE_loss_train.append(CE_loss_epoch)
+    #CE_loss_train.append(CE_loss_epoch)
 
 
     print('+ TRAINING \tEpoch: {} \tLoss: {:.6f}'.format(epoch, total_loss_epoch),
@@ -264,18 +271,19 @@ for epoch in range(1, num_epochs + 1):
     print(f"CCC Loss: {CCC_loss_train}")
     #print(f"PCC Loss: {PCC_loss_train}")
     print(f"RMSE Loss: {RMSE_loss_train}")
-    print(f"CE Loss: {CE_loss_train}")
+    #print(f"CE Loss: {CE_loss_train}")
 
 
 
-    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_lr_0.00005_with_dropout_with_CE_with_some_landmarks_ignored.pth'))
-
+    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_lr_0.00005_with_dropout.pth'))
+    
 
 
 
     print('START TESTING...')
-
+    print(net.training)
     net.eval()
+    print(net.training)
 
     for index, data in enumerate(test_dataloader):
         #print(index)
