@@ -268,7 +268,7 @@ for epoch in range(1, num_epochs + 1):
 
 
 
-    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_lr_0.00005_with_dropout_with_CE.pth'))
+    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_lr_0.00005_with_dropout_with_CE_with_some_landmarks_ignored.pth'))
 
 
 
