@@ -160,8 +160,10 @@ class EmoNet(nn.Module):
             self.emo_convs.append(nn.MaxPool2d(2,2))
         self.emo_net_2 = nn.Sequential(*self.emo_convs)
         self.avg_pool_2 = nn.AvgPool2d(4)
-        self.emo_fc_2 = nn.Sequential(nn.Linear(256, 128), nn.BatchNorm1d(128), nn.ReLU(inplace=True), nn.Linear(128, self.n_expression + n_reg))
-
+        self.emo_fc_2 = nn.Sequential(nn.Linear(256, 128), nn.BatchNorm1d(128), nn.ReLU(inplace=True), 
+                                      nn.Dropout(0.5), nn.Linear(128, self.n_expression + n_reg))
+        ### I added drop ut above ##### self.dropout = nn.Dropout(0.5)
+        
     def forward(self, x, reset_smoothing=False):
         
         #Resets the temporal smoothing
