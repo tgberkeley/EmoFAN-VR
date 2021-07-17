@@ -44,10 +44,10 @@ metrics_valence_arousal = {'CCC': CCC, 'PCC': PCC, 'RMSE': RMSE, 'SAGR': SAGR}
 metrics_expression = {'ACC': ACC}
 
 #try this learning rate and then 0.0001
-learning_rate = 0.001
+learning_rate = 0.00005
 print(learning_rate)
 CCC_Loss = CCCLoss(digitize_num=1)
-num_epochs = 6
+num_epochs = 10
 
 
 cuda_dev = '0'  # GPU device 0 (can be changed if multiple GPUs are available)
@@ -85,9 +85,6 @@ train_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/train_set
 test_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AffectNet_val_set/', subset='test', n_expression=n_expression,
                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
-train_dataloader = DataLoader(train_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
-
-test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
 
 # Loading the model
 # state_dict_path = Path(__file__).parent.joinpath('pretrained', f'emonet_{n_expression}.pth')
@@ -150,6 +147,9 @@ CE_loss_train = []
 print('START TRAINING...')
 for epoch in range(1, num_epochs + 1):
 
+    train_dataloader = DataLoader(train_dataset_no_flip, batch_size=batch_size, shuffle=True, num_workers=n_workers)
+    test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
+
     total_loss_epoch = 0
     CCC_loss_epoch = 0
     PCC_loss_epoch = 0
@@ -175,7 +175,7 @@ for epoch in range(1, num_epochs + 1):
         optimizer.zero_grad()
         prediction = net(image)
 
-        pred_expr = prediction['expression']
+        # pred_expr = prediction['expression']
 
         # printing heat maps relative to occluded image
         # x = 29
@@ -201,25 +201,24 @@ for epoch in range(1, num_epochs + 1):
 
         # binary cross entrpy loss (for discrete emtions)
 
-        loss_CE = F.cross_entropy(pred_expr, expression)
+        # loss_CE = F.cross_entropy(pred_expr, expression)
 
 
-        
+        ### test on it non_occluded images
 
-#         pred_expr_soft = softm(pred_expr)
-        
-#         new_val = torch.mul(pred_expr_soft, expr_to_valence)
-#         expr_val = torch.sum(new_val, dim=1)
-        
-#         new_aro = torch.mul(pred_expr_soft, expr_to_arousal)
-#         expr_aro = torch.sum(new_aro, dim=1)
-        
-#         prediction_valence = torch.mul(prediction['valence'], 1 - ratio) + torch.mul(expr_val, ratio)
-#         prediction_arousal = torch.mul(prediction['arousal'], 1 - ratio) + torch.mul(expr_aro, ratio)
-        
+        # pred_expr_soft = softm(pred_expr)
+        #
+        # new_val = torch.mul(pred_expr_soft, expr_to_valence)
+        # expr_val = torch.sum(new_val, dim=1)
+        #
+        # new_aro = torch.mul(pred_expr_soft, expr_to_arousal)
+        # expr_aro = torch.sum(new_aro, dim=1)
+        #
+        # prediction_valence = torch.mul(prediction['valence'], 1 - ratio) + torch.mul(expr_val, ratio)
+        # prediction_arousal = torch.mul(prediction['arousal'], 1 - ratio) + torch.mul(expr_aro, ratio)
+        #
 
-        # maybe look to use shake–shake regularization coefficients α, β and γ (including between valence and arousal
-        # so it doesnt favour one over the other
+
 
         # remember to change to cuda in loss class
 
@@ -230,8 +229,17 @@ for epoch in range(1, num_epochs + 1):
         loss_CCC = 1 - ((CCC_valence + CCC_arousal) / 2)
 
         loss_RMSE = F.mse_loss(valence, prediction['valence']) + F.mse_loss(arousal, prediction['arousal'])
-                                                
-        total_loss = loss_CCC + loss_PCC + torch.mul(loss_RMSE, 2) +  torch.mul(loss_CE, 0.6)
+
+        # shake–shake regularization coefficients α, β and γ
+
+        alpha = np.random.uniform()
+        beta = np.random.uniform()
+        gamma = np.random.uniform()
+        total = alpha + beta + gamma
+
+        total_loss = torch.mul(loss_CCC, alpha/total) + torch.mul(loss_PCC, beta/total) + \
+                     torch.mul(loss_RMSE, gamma/total) #+  torch.mul(loss_CE, 0.2)
+
         total_loss.backward()
 
         optimizer.step()
@@ -240,13 +248,13 @@ for epoch in range(1, num_epochs + 1):
         CCC_loss_epoch += loss_CCC.item()
         PCC_loss_epoch += loss_PCC.item()
         RMSE_loss_epoch += loss_RMSE.item()
-        CE_loss_epoch += loss_CE.item()
+        #CE_loss_epoch += loss_CE.item()
 
     total_loss_train.append(total_loss_epoch)
     CCC_loss_train.append(CCC_loss_epoch)
     PCC_loss_train.append(PCC_loss_epoch)
     RMSE_loss_train.append(RMSE_loss_epoch)
-    CE_loss_train.append(CE_loss_epoch)
+    #CE_loss_train.append(CE_loss_epoch)
 
 
     print('+ TRAINING \tEpoch: {} \tLoss: {:.6f}'.format(epoch, total_loss_epoch),
@@ -256,11 +264,11 @@ for epoch in range(1, num_epochs + 1):
     print(f"CCC Loss: {CCC_loss_train}")
     #print(f"PCC Loss: {PCC_loss_train}")
     print(f"RMSE Loss: {RMSE_loss_train}")
-    print(f"CE Loss: {CE_loss_train}")
+    #print(f"CE Loss: {CE_loss_train}")
 
 
 
-    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_correct_bb_with_CE.pth'))
+    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_lr_0.00005_with_dropout.pth'))
 
 
 
@@ -329,13 +337,13 @@ for epoch in range(1, num_epochs + 1):
     arousal_gts = np.squeeze(arousal_gts)
     expression_gts = np.squeeze(expression_gts)
 
-    #print(expression_pred)
-    #print(expression_gts)
+    print(expression_pred)
+    print(expression_gts)
     expression_pred = np.argmax(expression_pred, axis=1)
-    #print(expression_pred)
+    print(expression_pred)
     num_correct = (expression_pred == expression_gts).sum()
-    #print(num_correct)
-    #print(len(expression_gts))
+    print(num_correct)
+    print(len(expression_gts))
     accuracy = num_correct / len(expression_gts)
     print(accuracy)
 
@@ -351,3 +359,5 @@ for epoch in range(1, num_epochs + 1):
     print(f'\tCCC Arousal: {CCC_arousal}, \tPCC Arousal: {PCC_arousal}, \tRMSE Arousal: {RMSE_arousal}')
 
     print('\nFinished TESTING.')
+    # # evaluate(net, test_dataloader, device=device, metrics_valence_arousal=metrics_valence_arousal, metrics_expression=metrics_expression)
+
