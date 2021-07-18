@@ -44,7 +44,7 @@ metrics_valence_arousal = {'CCC': CCC, 'PCC': PCC, 'RMSE': RMSE, 'SAGR': SAGR}
 metrics_expression = {'ACC': ACC}
 
 #try this learning rate and then 0.0001
-learning_rate = 0.00008
+learning_rate = 0.0001
 print(learning_rate)
 CCC_Loss = CCCLoss(digitize_num=1)
 num_epochs = 10
@@ -184,7 +184,7 @@ for epoch in range(1, num_epochs + 1):
         optimizer.zero_grad()
         prediction = net(image)
 
-        #pred_expr = prediction['expression']
+        pred_expr = prediction['expression']
 
         # printing heat maps relative to occluded image
         # x = 29
@@ -210,7 +210,7 @@ for epoch in range(1, num_epochs + 1):
 
         # binary cross entrpy loss (for discrete emtions)
 
-        #loss_CE = F.cross_entropy(pred_expr, expression)
+        loss_CE = F.cross_entropy(pred_expr, expression)
 
 
         ### test on it non_occluded images
@@ -257,13 +257,13 @@ for epoch in range(1, num_epochs + 1):
         CCC_loss_epoch += loss_CCC.item()
         PCC_loss_epoch += loss_PCC.item()
         RMSE_loss_epoch += loss_RMSE.item()
-        #CE_loss_epoch += loss_CE.item()
+        CE_loss_epoch += loss_CE.item()
 
     total_loss_train.append(total_loss_epoch)
     CCC_loss_train.append(CCC_loss_epoch)
     PCC_loss_train.append(PCC_loss_epoch)
     RMSE_loss_train.append(RMSE_loss_epoch)
-    #CE_loss_train.append(CE_loss_epoch)
+    CE_loss_train.append(CE_loss_epoch)
 
 
     print('+ TRAINING \tEpoch: {} \tLoss: {:.6f}'.format(epoch, total_loss_epoch),
@@ -273,11 +273,11 @@ for epoch in range(1, num_epochs + 1):
     print(f"CCC Loss: {CCC_loss_train}")
     #print(f"PCC Loss: {PCC_loss_train}")
     print(f"RMSE Loss: {RMSE_loss_train}")
-    #print(f"CE Loss: {CE_loss_train}")
+    print(f"CE Loss: {CE_loss_train}")
 
 
 
-    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_lr_0.00008_with_dropout_with_some_landmarks_ignored_with_train.pth'))
+    torch.save(net.state_dict(), os.path.join(model_dir, f'model_affectnet_VA_epoch_{epoch}_lr_0.0001_with_dropout_with_CE_with_some_landmarks_ignored_with_train.pth'))
     
 
 
