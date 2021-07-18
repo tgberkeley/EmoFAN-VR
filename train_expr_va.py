@@ -44,7 +44,7 @@ metrics_valence_arousal = {'CCC': CCC, 'PCC': PCC, 'RMSE': RMSE, 'SAGR': SAGR}
 metrics_expression = {'ACC': ACC}
 
 #try this learning rate and then 0.0001
-learning_rate = 0.00005
+learning_rate = 0.00008
 print(learning_rate)
 CCC_Loss = CCCLoss(digitize_num=1)
 num_epochs = 10
@@ -128,7 +128,7 @@ print('\n')
 
 
 
-net.train()
+
 
 optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
 
@@ -156,7 +156,9 @@ for epoch in range(1, num_epochs + 1):
 
     train_dataloader = DataLoader(train_dataset_no_flip, batch_size=batch_size, shuffle=True, num_workers=n_workers)
     test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
-
+    
+    net.train()
+    
     total_loss_epoch = 0
     CCC_loss_epoch = 0
     PCC_loss_epoch = 0
