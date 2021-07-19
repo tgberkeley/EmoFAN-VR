@@ -247,7 +247,7 @@ for epoch in range(1, num_epochs + 1):
         total = alpha + beta + gamma
 
         total_loss = torch.mul(loss_CCC, alpha/total) + torch.mul(loss_PCC, beta/total) + \
-                     torch.mul(loss_RMSE, gamma/total) #+  loss_CE
+                     torch.mul(loss_RMSE, gamma/total) +  loss_CE
 
         total_loss.backward()
 
