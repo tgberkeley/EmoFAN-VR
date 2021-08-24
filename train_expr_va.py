@@ -45,7 +45,7 @@ metrics_expression = {'ACC': ACC}
 
 #try this learning rate and then 0.0001
 learning_rate = 0.00008
-weight_decay = 0.00008
+weight_decay = 0.001
 print(learning_rate)
 CCC_Loss = CCCLoss(digitize_num=1)
 num_epochs = 10
@@ -278,7 +278,7 @@ for epoch in range(1, num_epochs + 1):
 
 
 
-    torch.save(net.state_dict(), os.path.join(model_dir, f'new_with_L2_epoch_{epoch}_lr_0.00008_with_dropout.pth'))
+    torch.save(net.state_dict(), os.path.join(model_dir, f'new_with_L2(0.001)_epoch_{epoch}_lr_0.00008_with_dropout.pth'))
     
 
 
