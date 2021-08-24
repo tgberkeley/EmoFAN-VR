@@ -166,7 +166,7 @@ class AffectNet(Dataset):
         image = np.ascontiguousarray(image)
 
         if ignore_bounding_box == False:
-            VR_dimension = [20, 10]
+            VR_dimension = [17, 9]
             occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
 
 
