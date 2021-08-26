@@ -56,14 +56,15 @@ class AffectNet(Dataset):
 
         self.frame_keys = []
         self.keys = []
-        if subset == "train":
-            film_start = 0
-            film_end = 500
+#         if subset == "train":
+#             film_start = 0
+#             film_end = 500
 
-        if subset == "test":
-            film_start = 500
-            film_end = 600
-
+#         if subset == "test":
+#             film_start = 500
+#             film_end = 600
+        film_start = 0
+        film_end = 600
         for i in range(film_start, film_end):
 
             with open(root_path + f"{i+1:03d}" + "/" + f"{i+1:03d}" + ".json", "r") as read_file:
