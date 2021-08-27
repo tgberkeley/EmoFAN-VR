@@ -89,7 +89,7 @@ test_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AFEW_VA_al
 
 # Loading the model
 # state_dict_path = Path(__file__).parent.joinpath('pretrained', f'emonet_{n_expression}.pth')
-state_dict_path = Path(__file__).parent.joinpath('pretrained', '34421_epoch_6_lr_0.00008_with_dropout_with_train.pth')
+state_dict_path = Path(__file__).parent.joinpath('pretrained', 'emonet_8.pth')
 
 print(f'Loading the model from {state_dict_path}.')
 state_dict = torch.load(str(state_dict_path), map_location='cpu')
@@ -97,10 +97,10 @@ state_dict = torch.load(str(state_dict_path), map_location='cpu')
 state_dict = {k.replace('module.', ''): v for k, v in state_dict.items()}
 
 # as have added in the drop out layer
-#state_dict['emo_fc_2.4.weight'] = state_dict['emo_fc_2.3.weight']
-#del state_dict['emo_fc_2.3.weight']
-#state_dict['emo_fc_2.4.bias'] = state_dict['emo_fc_2.3.bias']
-#del state_dict['emo_fc_2.3.bias']
+state_dict['emo_fc_2.4.weight'] = state_dict['emo_fc_2.3.weight']
+del state_dict['emo_fc_2.3.weight']
+state_dict['emo_fc_2.4.bias'] = state_dict['emo_fc_2.3.bias']
+del state_dict['emo_fc_2.3.bias']
 
 
 net = EmoNet(n_expression=n_expression).to(device)
