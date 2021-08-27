@@ -149,9 +149,9 @@ class AffectNet(Dataset):
         if predicted_landmarks.shape == ():
             ignore_bounding_box = True
 
-        if ignore_bounding_box == False:
-            VR_dimension = [20, 10]
-            occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
+        #if ignore_bounding_box == False:
+        #    VR_dimension = [20, 10]
+        #    occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
 
 
 
