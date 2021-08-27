@@ -164,7 +164,7 @@ class AffectNet(Dataset):
                 bounding_box = [predicted_landmarks.min(axis=0)[0], predicted_landmarks.min(axis=0)[1],
                                 predicted_landmarks.max(axis=0)[0], predicted_landmarks.max(axis=0)[1]]
 
-                image, landmarks = self.transform_image_shape(occluded_image, bb= bounding_box)
+                image, landmarks = self.transform_image_shape(image, bb= bounding_box)
             else:
                 image, landmarks = self.transform_image_shape(image, bb=bounding_box)
 
