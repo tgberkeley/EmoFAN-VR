@@ -83,7 +83,7 @@ print('Loading the data')
 #train_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/train_set/', subset='train', n_expression=n_expression,
 #                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
-test_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AFEW_VA_all/', subset='test', n_expression=n_expression,
+test_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AffectNet_val_set/', subset='test', n_expression=n_expression,
                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 
