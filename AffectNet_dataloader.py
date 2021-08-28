@@ -165,9 +165,9 @@ class AffectNet(Dataset):
         image = io.imread(image_file)
         image = np.ascontiguousarray(image)
 
-        if ignore_bounding_box == False:
-            VR_dimension = [17, 9]
-            occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
+        #if ignore_bounding_box == False:
+        #    VR_dimension = [17, 9]
+        #    occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
 
 
 
@@ -177,7 +177,7 @@ class AffectNet(Dataset):
             if ignore_bounding_box == False:
                 bounding_box = [predicted_landmarks.min(axis=0)[0], predicted_landmarks.min(axis=0)[1],
                                predicted_landmarks.max(axis=0)[0], predicted_landmarks.max(axis=0)[1]]
-                image, landmarks = self.transform_image_shape(occluded_image, bb= bounding_box)
+                image, landmarks = self.transform_image_shape(image, bb= bounding_box)
                 
             else:
                 image, landmarks = self.transform_image_shape(image, bb=bounding_box)
