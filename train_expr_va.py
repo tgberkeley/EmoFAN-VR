@@ -15,9 +15,9 @@ from PIL import Image
 
 from emonet.models import EmoNet
 # from emonet.data import AffectNet
-from AFEW_VA_dataloader import AffectNet
+#from AFEW_VA_dataloader import AffectNet
 # from AffWild2_dataloader import AffectNet
-#from AffectNet_dataloader import AffectNet
+from AffectNet_dataloader import AffectNet
 from emonet.data_augmentation import DataAugmentor
 from emonet.metrics import CCC, PCC, RMSE, SAGR, ACC
 from emonet.evaluation import evaluate, evaluate_flip
