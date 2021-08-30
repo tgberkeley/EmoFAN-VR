@@ -79,9 +79,9 @@ face_detector_kwargs = {
     "min_score_thresh" : 0.85,
     "min_suppression_threshold" : 0.3
 }
-# video: 50 frame 4-10  38 frame 15-20 31-35  37 frame 0-10  16 frame 0 - 4+ more
-# issue is we can get out ie two sets of landmarks for two different faces and no way to decipher
-# which is the right one + eg AFEW video 16 ground truths look at i believe the wrong face
+'''video: 50 frame 4-10  38 frame 15-20 31-35  37 frame 0-10  16 frame 0 - 4+ more
+   issue is we can get out ie two sets of landmarks for two different faces and no way to decipher
+   which is the right one'''
 fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cpu',
                                   flip_input=False, face_detector='blazeface',
                                   face_detector_kwargs=face_detector_kwargs)
@@ -89,7 +89,7 @@ fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cpu'
 
 
 
-class AffectNet(Dataset):
+class AffWild_2(Dataset):
 
     def __init__(self, root_path, subset='test',
                  transform_image_shape=None, transform_image=None,
@@ -205,10 +205,7 @@ class AffectNet(Dataset):
 
 
         if self.transform_image_shape is not None:
-            # uses ground truth landmarks
-            #bounding_box = [landmarks.min(axis=0)[0], landmarks.min(axis=0)[1],
-                            #landmarks.max(axis=0)[0], landmarks.max(axis=0)[1]]
-
+            
             # uses predicted landmarks
             if ignore_bounding_box == False:
                 bounding_box = [predicted_landmarks.min(axis=0)[0], predicted_landmarks.min(axis=0)[1],
@@ -219,11 +216,12 @@ class AffectNet(Dataset):
             image, landmarks = self.transform_image_shape(image, bb= bounding_box)
             # Fix for PyTorch currently not supporting negative stric
             image = np.ascontiguousarray(image)
-
+            
+            '''uncomment this code to see the output of the above operations'''
             #img = Image.fromarray(image, 'RGB')
             #img.show()
             #sys.exit()
-        ########################
+        
 
 
         if self.transform_image is not None:
