@@ -14,9 +14,7 @@ from torchvision import transforms
 from PIL import Image
 
 from emonet.models import EmoNet
-# from emonet.data import AffectNet
-from AFEW_VA_dataloader import AffectNet
-# from AffWild2_dataloader import AffectNet
+from AFEW_VA_dataloader import AFEW_VA
 #from AffectNet_dataloader import AffectNet
 from emonet.data_augmentation import DataAugmentor
 from emonet.metrics import CCC, PCC, RMSE, SAGR, ACC
@@ -83,7 +81,7 @@ print('Loading the data')
 #train_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/train_set/', subset='train', n_expression=n_expression,
 #                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
-test_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AFEW_VA_all/', subset='test', n_expression=n_expression,
+test_dataset_no_flip = AFEW_VA(root_path='/vol/bitbucket/tg220/data/AFEW_VA_all/', subset='test', n_expression=n_expression,
                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 
