@@ -15,9 +15,9 @@ from PIL import Image
 
 from emonet.models import EmoNet
 # from emonet.data import AffectNet
-#from AFEW_VA_dataloader import AffectNet
+from AFEW_VA_dataloader import AffectNet
 # from AffWild2_dataloader import AffectNet
-from AffectNet_dataloader import AffectNet
+#from AffectNet_dataloader import AffectNet
 from emonet.data_augmentation import DataAugmentor
 from emonet.metrics import CCC, PCC, RMSE, SAGR, ACC
 from emonet.evaluation import evaluate, evaluate_flip
@@ -83,13 +83,13 @@ print('Loading the data')
 #train_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/train_set/', subset='train', n_expression=n_expression,
 #                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
-test_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AffectNet_val_set/', subset='test', n_expression=n_expression,
+test_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/AFEW_VA_all/', subset='test', n_expression=n_expression,
                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 
 # Loading the model
 # state_dict_path = Path(__file__).parent.joinpath('pretrained', f'emonet_{n_expression}.pth')
-state_dict_path = Path(__file__).parent.joinpath('pretrained', 'emonet_8.pth')
+state_dict_path = Path(__file__).parent.joinpath('pretrained', '34421_epoch_6_lr_0.00008_with_dropout_with_train.pth')
 
 print(f'Loading the model from {state_dict_path}.')
 state_dict = torch.load(str(state_dict_path), map_location='cpu')
@@ -97,10 +97,10 @@ state_dict = torch.load(str(state_dict_path), map_location='cpu')
 state_dict = {k.replace('module.', ''): v for k, v in state_dict.items()}
 
 # as have added in the drop out layer
-state_dict['emo_fc_2.4.weight'] = state_dict['emo_fc_2.3.weight']
-del state_dict['emo_fc_2.3.weight']
-state_dict['emo_fc_2.4.bias'] = state_dict['emo_fc_2.3.bias']
-del state_dict['emo_fc_2.3.bias']
+# state_dict['emo_fc_2.4.weight'] = state_dict['emo_fc_2.3.weight']
+# del state_dict['emo_fc_2.3.weight']
+# state_dict['emo_fc_2.4.bias'] = state_dict['emo_fc_2.3.bias']
+# del state_dict['emo_fc_2.3.bias']
 
 
 net = EmoNet(n_expression=n_expression).to(device)
@@ -343,6 +343,14 @@ for index, data in enumerate(test_dataloader):
 valence_pred = np.clip(valence_pred, -1.0, 1.0)
 arousal_pred = np.clip(arousal_pred, -1.0, 1.0)
 
+# remove this later, this is only so plot looks good
+vale = np.array([1, -1])
+valence_pred = np.concatenate([valence_pred, vale])
+valence_gts = np.concatenate([valence_gts, vale])
+arousal_pred = np.concatenate([arousal_pred, vale])
+arousal_gts = np.concatenate([arousal_gts, vale])
+
+
 # Squeeze if valence_gts is shape (N,1)
 valence_gts = np.squeeze(valence_gts)
 arousal_gts = np.squeeze(arousal_gts)
@@ -357,6 +365,79 @@ print(num_correct)
 print(len(expression_gts))
 accuracy = num_correct / len(expression_gts)
 print(accuracy)
+
+
+
+plt.hist2d(valence_gts, arousal_gts, bins=(50, 50), cmap=plt.cm.jet)
+plt.ylim(-1,1)
+plt.xlim(-1,1)
+plt.colorbar()
+plt.xlabel("Valence")
+plt.ylabel("Arousal")
+plt.title("Ground Truth Distribution")
+plt.savefig("/vol/bitbucket/tg220/results/ground_truth_AFEW_VA_50.png")
+plt.show()
+
+plt.hist2d(valence_pred, arousal_pred, bins=(50, 50), cmap=plt.cm.jet)
+plt.colorbar()
+plt.xlabel("Valence")
+plt.ylabel("Arousal")
+plt.title("Predictions Distribution")
+plt.ylim(-1,1)
+plt.xlim(-1,1)
+plt.savefig("/vol/bitbucket/tg220/results/predictions_AFEW_VA_50.png")
+plt.show()
+
+
+
+
+plt.hist2d(valence_gts, arousal_gts, bins=(100, 100), cmap=plt.cm.jet)
+plt.ylim(-1,1)
+plt.xlim(-1,1)
+plt.colorbar()
+plt.xlabel("Valence")
+plt.ylabel("Arousal")
+plt.title("Ground Truth Distribution")
+plt.savefig("/vol/bitbucket/tg220/results/ground_truth_AFEW_VA_100.png")
+plt.show()
+
+plt.hist2d(valence_pred, arousal_pred, bins=(100, 100), cmap=plt.cm.jet)
+plt.colorbar()
+plt.xlabel("Valence")
+plt.ylabel("Arousal")
+plt.title("Predictions Distribution")
+plt.ylim(-1,1)
+plt.xlim(-1,1)
+plt.savefig("/vol/bitbucket/tg220/results/predictions_AFEW_VA_100.png")
+plt.show()
+
+
+plt.hist2d(valence_gts, arousal_gts, bins=(200, 200), cmap=plt.cm.jet)
+plt.ylim(-1,1)
+plt.xlim(-1,1)
+plt.colorbar()
+plt.xlabel("Valence")
+plt.ylabel("Arousal")
+plt.title("Ground Truth Distribution")
+plt.savefig("/vol/bitbucket/tg220/results/ground_truth_AFEW_VA_200.png")
+plt.show()
+
+plt.hist2d(valence_pred, arousal_pred, bins=(200, 200), cmap=plt.cm.jet)
+plt.colorbar()
+plt.xlabel("Valence")
+plt.ylabel("Arousal")
+plt.title("Predictions Distribution")
+plt.ylim(-1,1)
+plt.xlim(-1,1)
+plt.savefig("/vol/bitbucket/tg220/results/predictions_AFEW_VA_200.png")
+plt.show()
+
+
+
+
+
+
+
 
 CCC_valence, PCC_valence = CCC_score(valence_gts, valence_pred)
 RMSE_valence = RMSE(valence_gts, valence_pred)
