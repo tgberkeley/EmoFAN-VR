@@ -112,6 +112,7 @@ class AFEW_VA(Dataset):
             ignore_bounding_box = True
 
         if ignore_bounding_box == False:
+           # this physcially applies the facial occlusion to the eyes representing the VR headset
            VR_dimension = [20, 10]
            occluded_image = VR_patch(image, predicted_landmarks, VR_dim=VR_dimension)
 
