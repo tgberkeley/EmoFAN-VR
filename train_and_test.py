@@ -15,7 +15,7 @@ from PIL import Image
 
 from emonet.models import EmoNet
 from AFEW_VA_dataloader import AFEW_VA
-#from AffectNet_dataloader import AffectNet
+from AffectNet_dataloader import AffectNet
 from emonet.data_augmentation import DataAugmentor
 from emonet.metrics import CCC, PCC, RMSE, SAGR, ACC
 from emonet.evaluation import evaluate, evaluate_flip
@@ -25,11 +25,6 @@ rnd_seed = 42
 
 torch.backends.cudnn.benchmark = True
 
-# Parse arguments
-parser = argparse.ArgumentParser()
-parser.add_argument('--nclasses', type=int, default=8, choices=[5, 8],
-                    help='Number of emotional classes to test the model on. Please use 5 or 8.')
-args = parser.parse_args()
 
 # Parameters of the experiments
 n_expression = args.nclasses
@@ -41,7 +36,7 @@ subset = 'train'
 metrics_valence_arousal = {'CCC': CCC, 'PCC': PCC, 'RMSE': RMSE, 'SAGR': SAGR}
 metrics_expression = {'ACC': ACC}
 
-#try this learning rate and then 0.0001
+
 learning_rate = 0.00008
 weight_decay = 0.001
 print(learning_rate)
@@ -58,8 +53,7 @@ if use_cuda:
 
 out_dir = './output'
 
-# LOAD TRAINING DATA  # later we can add some data to validation
-
+# LOAD TRAINING DATA  
 
 model_dir = os.path.join(out_dir, 'model')
 if not os.path.exists(model_dir):
@@ -69,62 +63,52 @@ torch.manual_seed(rnd_seed)  # fix random seed
 
 # Create the data loaders
 transform_image = transforms.Compose([transforms.ToTensor()])
-# maybe to use these transforms later
-#transform_image = transforms.Compose([transforms.RandomHorizontalFlip(),
-#                          transforms.RandomAffine(degrees=10, scale=(0.9, 1.1)),
-#                          transforms.ToTensor()])
 transform_image_shape_no_flip = DataAugmentor(image_size, image_size)
 
-# '/vol/bitbucket/tg220/data/AffectNet_val_set/
+
 
 print('Loading the data')
-#train_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/train_set/', subset='train', n_expression=n_expression,
-#                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
+train_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/train_set/', subset='train', n_expression=n_expression,
+                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 test_dataset_no_flip = AFEW_VA(root_path='/vol/bitbucket/tg220/data/AFEW_VA_all/', subset='test', n_expression=n_expression,
                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 
 # Loading the model
-# state_dict_path = Path(__file__).parent.joinpath('pretrained', f'emonet_{n_expression}.pth')
-state_dict_path = Path(__file__).parent.joinpath('pretrained', '34421_epoch_6_lr_0.00008_with_dropout_with_train.pth')
+'''Here we either use emonet_8.pth or my_model.pth'''
+model = '34421_epoch_6_lr_0.00008_with_dropout_with_train.pth'
+state_dict_path = Path(__file__).parent.joinpath('pretrained', model)
 
 print(f'Loading the model from {state_dict_path}.')
 state_dict = torch.load(str(state_dict_path), map_location='cpu')
 
 state_dict = {k.replace('module.', ''): v for k, v in state_dict.items()}
 
-# as have added in the drop out layer
-# state_dict['emo_fc_2.4.weight'] = state_dict['emo_fc_2.3.weight']
-# del state_dict['emo_fc_2.3.weight']
-# state_dict['emo_fc_2.4.bias'] = state_dict['emo_fc_2.3.bias']
-# del state_dict['emo_fc_2.3.bias']
+# as have added in the drop out layer and we are using pretrained weights
+if model == 'emonet_8.pth':
+  state_dict['emo_fc_2.4.weight'] = state_dict['emo_fc_2.3.weight']
+  del state_dict['emo_fc_2.3.weight']
+  state_dict['emo_fc_2.4.bias'] = state_dict['emo_fc_2.3.bias']
+  del state_dict['emo_fc_2.3.bias']
 
 
 net = EmoNet(n_expression=n_expression).to(device)
 net.load_state_dict(state_dict, strict=False)
 
-# for param_tensor in net.state_dict():
-#    print(param_tensor, "\t", net.state_dict()[param_tensor].size())
 
-
-
+'''Uncomment these to change which parameters of the model we train'''
 # for model_block in list(net.children())[10:20]:
 #     for param in model_block.parameters():
 #         param.requires_grad = True
 
-# put this in a loop to train x num epochs for all 6 variants of freezing
-# -2(only FC layers trained) 18:20 17:20(where we started) 14:20 13:20(both hourglasses not trained) 12:20 6:20(one hourglass not) 5:20(all hourglasses trained)
-# therefore for 18:20 and 19:20 we must have a different loop with setting to false
+'''Uncomment these to view all the parameters of the model'''
 # for k,v in net.named_parameters():
 #    print('{}: {}'.format(k, v.requires_grad))
-
 
 params = sum(p.numel() for p in net.parameters() if p.requires_grad)
 print("Total number of parameters in the EmoFan: {}".format(params))
 print('\n')
-
-
 
 
 
@@ -139,10 +123,9 @@ optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate, weight_decay=we
 #expr_to_arousal = torch.tensor([ 0,  0.16, -0.4, 0.88, 0.79,  0.49,  0.78, 0.66])
 #softm = nn.Softmax(dim=1)
 
-# this is the ratio between the VA prediction and the prediction out from the expr prediction
-#ratio = 0.4  # will run tests varying this number
 
 
+'''All code below is for training, uncomment it if you wish to train a model further'''
 
 # total_loss_train = []
 # CCC_loss_train = []
@@ -153,7 +136,7 @@ optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate, weight_decay=we
 # print('START TRAINING...')
 # for epoch in range(1, num_epochs + 1):
 
-#     train_dataloader = DataLoader(train_dataset_no_flip, batch_size=batch_size, shuffle=True, num_workers=n_workers)
+#   train_dataloader = DataLoader(train_dataset_no_flip, batch_size=batch_size, shuffle=True, num_workers=n_workers)
 test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
     
 #     net.train()
@@ -174,10 +157,6 @@ test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffl
 #         expression = batch_samples['expression'].to(device)
 #         expression = expression.squeeze()
 
-#         #val_from_expr = batch_samples['val_from_expr'].to(device)
-#         #val_from_expr = val_from_expr.squeeze()
-#         #aro_from_expr = batch_samples['aro_from_expr'].to(device)
-#         #aro_from_expr = aro_from_expr.squeeze()
 
 
 #         optimizer.zero_grad()
@@ -227,8 +206,6 @@ test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffl
 #         #
 
 
-
-#         # remember to change to cuda in loss class
 
 #         CCC_valence, PCC_valence = CCC_Loss(valence, prediction['valence'])
 #         CCC_arousal, PCC_arousal = CCC_Loss(arousal, prediction['arousal'])
@@ -282,9 +259,8 @@ test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffl
 
 
 print('START TESTING...')
-print(net.training)
 net.eval()
-print(net.training)
+
 
 for index, data in enumerate(test_dataloader):
     #print(index)
@@ -303,18 +279,6 @@ for index, data in enumerate(test_dataloader):
     val = out['valence']
     ar = out['arousal']
     expr = out['expression']
-
-    # pred_expr = out['expression']
-    # pred_expr_soft = softm(pred_expr)
-    #
-    # new_val = torch.mul(pred_expr_soft, expr_to_valence)
-    # expr_val = torch.sum(new_val, dim=1)
-    #
-    # new_aro = torch.mul(pred_expr_soft, expr_to_arousal)
-    # expr_aro = torch.sum(new_aro, dim=1)
-    #
-    # prediction_valence = torch.mul(out['valence'], 1 - ratio) + torch.mul(expr_val, ratio)
-    # prediction_arousal = torch.mul(out['arousal'], 1 - ratio) + torch.mul(expr_aro, ratio)
 
     val = np.squeeze(val.cpu().numpy())
     ar = np.squeeze(ar.cpu().numpy())
@@ -449,5 +413,5 @@ print('+ TESTING',
 print(f'\tCCC Arousal: {CCC_arousal}, \tPCC Arousal: {PCC_arousal}, \tRMSE Arousal: {RMSE_arousal}')
 
 print('\nFinished TESTING.')
-# # evaluate(net, test_dataloader, device=device, metrics_valence_arousal=metrics_valence_arousal, metrics_expression=metrics_expression)
+
 
