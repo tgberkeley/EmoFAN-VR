@@ -48,8 +48,8 @@ class AffectNet(Dataset):
         self.transform_image = transform_image
         self.verbose = verbose
            
-      ''' If do not have access to the json files below but do have access to the AffectNet 
-          ".npy" files then uncomment code below and ignore opening json file code'''
+        '''If do not have access to the json files below but do have access to the AffectNet ".npy" 
+        files then uncomment code below and ignore opening json file code'''
         # all_data = {}
         #
         # all_files = os.listdir(self.root_path.joinpath('images/'))
