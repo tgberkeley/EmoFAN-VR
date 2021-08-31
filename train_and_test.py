@@ -28,7 +28,7 @@ torch.backends.cudnn.benchmark = True
 
 
 # Parameters of the experiments
-n_expression = args.nclasses
+n_expression=8
 batch_size = 32
 n_workers = 0
 # device = 'cuda:0'
