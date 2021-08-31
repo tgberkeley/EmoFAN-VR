@@ -333,23 +333,23 @@ print(accuracy)
 
 
 
-plt.hist2d(valence_pred, arousal_pred, bins=(21, 21), cmap=plt.cm.jet)
+plt.hist2d(valence_gts, arousal_gts, bins=(21, 21), cmap=plt.cm.jet)
 plt.ylim(-1,1)
 plt.xlim(-1,1)
 plt.colorbar()
 plt.xlabel("Valence")
 plt.ylabel("Arousal")
-plt.title("Predictions Distribution")
-plt.savefig("/vol/bitbucket/tg220/results/ground_truth_AFEW_VA_21.png")
+plt.title("Ground Truths Distribution")
+plt.savefig("/vol/bitbucket/tg220/results/ground_truth_2_AFEW_VA_21.png")
 plt.draw()
 
-plt.hist2d(valence_pred, arousal_pred, bins=(42, 42), cmap=plt.cm.jet)
+plt.hist2d(valence_gts, arousal_gts, bins=(42, 42), cmap=plt.cm.jet)
 plt.xlabel("Valence")
 plt.ylabel("Arousal")
-plt.title("Predictions Distribution")
+plt.title("Ground Truths Distribution")
 plt.ylim(-1,1)
 plt.xlim(-1,1)
-plt.savefig("/vol/bitbucket/tg220/results/predictions_AFEW_VA_42.png")
+plt.savefig("/vol/bitbucket/tg220/results/ground_truth_2_AFEW_VA_42.png")
 plt.show()
 
 
