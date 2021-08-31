@@ -129,7 +129,7 @@ class AFEW_VA(Dataset):
             # Fix for PyTorch currently not supporting negative stric
             image = np.ascontiguousarray(image)
 
-            '''uncomment code below to view the effect of applying everything above'''
+            ###uncomment code below to view the effect of applying everything above
             #img = Image.fromarray(image, 'RGB')
             #img.show()
             #sys.exit()
