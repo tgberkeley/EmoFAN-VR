@@ -77,7 +77,7 @@ test_dataset_no_flip = AFEW_VA(root_path='/vol/bitbucket/tg220/data/AFEW_VA_all/
 
 
 # Loading the model
-'''Here we either use emonet_8.pth or my_model.pth'''
+###Here we either use emonet_8.pth or my_model.pth
 model = '34421_epoch_6_lr_0.00008_with_dropout_with_train.pth'
 state_dict_path = Path(__file__).parent.joinpath('pretrained', model)
 
@@ -98,12 +98,12 @@ net = EmoNet(n_expression=n_expression).to(device)
 net.load_state_dict(state_dict, strict=False)
 
 
-'''Uncomment these to change which parameters of the model we train'''
+###Uncomment these to change which parameters of the model we train
 # for model_block in list(net.children())[10:20]:
 #     for param in model_block.parameters():
 #         param.requires_grad = True
 
-'''Uncomment these to view all the parameters of the model'''
+###Uncomment these to view all the parameters of the model
 # for k,v in net.named_parameters():
 #    print('{}: {}'.format(k, v.requires_grad))
 
@@ -126,7 +126,7 @@ optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate, weight_decay=we
 
 
 
-'''All code below is for training, uncomment it if you wish to train a model further'''
+###All code below is for training, uncomment it if you wish to train a model further
 
 # total_loss_train = []
 # CCC_loss_train = []
