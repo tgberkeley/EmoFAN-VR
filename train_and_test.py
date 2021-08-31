@@ -331,69 +331,30 @@ print(accuracy)
 
 
 
-plt.hist2d(valence_gts, arousal_gts, bins=(50, 50), cmap=plt.cm.jet)
+
+
+plt.hist2d(valence_pred, arousal_pred, bins=(21, 21), cmap=plt.cm.jet)
 plt.ylim(-1,1)
 plt.xlim(-1,1)
 plt.colorbar()
 plt.xlabel("Valence")
 plt.ylabel("Arousal")
-plt.title("Ground Truth Distribution")
-plt.savefig("/vol/bitbucket/tg220/results/ground_truth_AFEW_VA_50.png")
-plt.show()
+plt.title("Predictions Distribution")
+plt.savefig("/vol/bitbucket/tg220/results/ground_truth_AFEW_VA_21.png")
+plt.draw()
 
-plt.hist2d(valence_pred, arousal_pred, bins=(50, 50), cmap=plt.cm.jet)
-plt.colorbar()
+plt.hist2d(valence_pred, arousal_pred, bins=(42, 42), cmap=plt.cm.jet)
 plt.xlabel("Valence")
 plt.ylabel("Arousal")
 plt.title("Predictions Distribution")
 plt.ylim(-1,1)
 plt.xlim(-1,1)
-plt.savefig("/vol/bitbucket/tg220/results/predictions_AFEW_VA_50.png")
+plt.savefig("/vol/bitbucket/tg220/results/predictions_AFEW_VA_42.png")
 plt.show()
 
 
 
 
-plt.hist2d(valence_gts, arousal_gts, bins=(100, 100), cmap=plt.cm.jet)
-plt.ylim(-1,1)
-plt.xlim(-1,1)
-plt.colorbar()
-plt.xlabel("Valence")
-plt.ylabel("Arousal")
-plt.title("Ground Truth Distribution")
-plt.savefig("/vol/bitbucket/tg220/results/ground_truth_AFEW_VA_100.png")
-plt.show()
-
-plt.hist2d(valence_pred, arousal_pred, bins=(100, 100), cmap=plt.cm.jet)
-plt.colorbar()
-plt.xlabel("Valence")
-plt.ylabel("Arousal")
-plt.title("Predictions Distribution")
-plt.ylim(-1,1)
-plt.xlim(-1,1)
-plt.savefig("/vol/bitbucket/tg220/results/predictions_AFEW_VA_100.png")
-plt.show()
-
-
-plt.hist2d(valence_gts, arousal_gts, bins=(200, 200), cmap=plt.cm.jet)
-plt.ylim(-1,1)
-plt.xlim(-1,1)
-plt.colorbar()
-plt.xlabel("Valence")
-plt.ylabel("Arousal")
-plt.title("Ground Truth Distribution")
-plt.savefig("/vol/bitbucket/tg220/results/ground_truth_AFEW_VA_200.png")
-plt.show()
-
-plt.hist2d(valence_pred, arousal_pred, bins=(200, 200), cmap=plt.cm.jet)
-plt.colorbar()
-plt.xlabel("Valence")
-plt.ylabel("Arousal")
-plt.title("Predictions Distribution")
-plt.ylim(-1,1)
-plt.xlim(-1,1)
-plt.savefig("/vol/bitbucket/tg220/results/predictions_AFEW_VA_200.png")
-plt.show()
 
 
 
