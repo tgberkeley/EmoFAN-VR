@@ -48,8 +48,8 @@ class AffectNet(Dataset):
         self.transform_image = transform_image
         self.verbose = verbose
            
-        '''If do not have access to the json files below but do have access to the AffectNet ".npy" 
-        files then uncomment code below and ignore opening json file code'''
+        ###If do not have access to the json files below but do have access to the AffectNet ".npy" 
+        ###files then uncomment code below and ignore opening json file code'''
         # all_data = {}
         #
         # all_files = os.listdir(self.root_path.joinpath('images/'))
@@ -125,8 +125,8 @@ class AffectNet(Dataset):
         arousal = torch.tensor([float(sample_image['arousal'])], dtype=torch.float32)
         expression = torch.tensor([int(sample_image['expression'])], dtype=torch.long)
         
-        ''' in Affectnet if -2 given as label it means label unknown therefore we give
-            this a value of 0'''
+        ###in Affectnet if -2 given as label it means label unknown therefore we give
+        ###this a value of 0
         if valence == -2:
             valence = 0
         if arousal == -2:
@@ -165,7 +165,7 @@ class AffectNet(Dataset):
             # Fix for PyTorch currently not supporting negative stric
             image = np.ascontiguousarray(image)
                
-           '''uncomment this code to see the output of the above operations'''
+           ###uncomment this code to see the output of the above operations
             #img = Image.fromarray(image, 'RGB')
             #img.show()
             #sys.exit()
