@@ -12,6 +12,7 @@ from torch.utils.data.sampler import WeightedRandomSampler
 from torchvision import transforms
 
 from PIL import Image
+import matplotlib.pyplot as plt
 
 from emonet.models import EmoNet
 from AFEW_VA_dataloader import AFEW_VA
