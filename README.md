@@ -83,16 +83,16 @@ seaborn version==0.10.1
       Download all twelve zip files from the [AFEW-VA-database](https://ibug.doc.ic.ac.uk/resources/afew-va-database/). Place all 600 files downloaded from these zip files into the 'data' folder, in a folder named 'AFEW-VA'.
 
 <!--- 3. **AffectNet Dataset:** 
-   To download the [AffectNet-database](http://mohammadmahoor.com/affectnet/), use this link and follow the instructions to access the data.  --->
+   To download the [AffectNet-database](http://mohammadmahoor.com/affectnet/), use this link and follow the instructions to access the data.  <!---
 
 
  
 
 
-5. Clone the repo
+<!---5. Clone the repo
    ```sh
    git clone https://github.com/your_username_/Project-Name.git
-   ```
+   ``` this is an example of what to do---!>
 3. Install NPM packages
    ```sh
    npm install
