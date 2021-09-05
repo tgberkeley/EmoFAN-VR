@@ -45,7 +45,7 @@ We further trained the EmoFAN algorithm [[1]](#1) on the AffectNet dataset [[2]]
 
 <img src="images/EmoFAN-VR_AffectNet.png" width="800" height="420">
 
-We then further tested our algorithm on the AFEW-VA dataset (citation), with virtual reality occlusions applied around the eye region.
+We then further tested our algorithm on the AFEW-VA dataset [[3]](#3), with virtual reality occlusions applied around the eye region.
 
 <img src="images/EmoFAN-VR_AFEW-VA.png" width="800" height="420">
 
@@ -139,11 +139,13 @@ Estimation of continuous valence and arousal levels from faces in naturalistic c
 
 <a id="2">[2]</a> 
 Mollahosseini, A. et al. 
-“AffectNet: A Database for Facial Expression, Valence, and Arousal Computing in the Wild.” 
-*IEEE Transactions on Affective Computing* 10 (2019): 18-31.
+AffectNet: A Database for Facial Expression, Valence, and Arousal Computing in the Wild.
+*IEEE Transactions on Affective Computing* 10, 18-31 (2019).
 
-
-Kossaifi J, Tzimiropoulos G, Todorovic S, Pantic M. AFEW-VA database for valence and arousal estimation in-the-wild. Image and vision computing. 2017 Sep 1;65:23-36.
+<a id="3">[3]</a> 
+Kossaifi J, Tzimiropoulos G, Todorovic S, Pantic M. 
+AFEW-VA database for valence and arousal estimation in-the-wild. 
+*Image and vision computing* 65, 23-36 (2017). 
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
