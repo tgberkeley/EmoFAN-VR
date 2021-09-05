@@ -95,8 +95,8 @@ class CCCLoss(nn.Module):
         self.eps = 0.000000001 # used to prevent a nan return when e.g. all the gts are 0
         if self.digitize_num !=0:
             bins = np.linspace(*self.range, num= self.digitize_num)
-            self.bins = Variable(torch.as_tensor(bins, dtype = torch.float32).cuda()).view((1, -1))
-            #self.bins = Variable(torch.as_tensor(bins, dtype=torch.float32)).view((1, -1))
+            #self.bins = Variable(torch.as_tensor(bins, dtype = torch.float32).cuda()).view((1, -1))
+            self.bins = Variable(torch.as_tensor(bins, dtype=torch.float32)).view((1, -1))
     def forward(self, x, y):
         # the target y is continuous value (BS, )
         # the input x is either continuous value (BS, ) or probability output(digitized)
