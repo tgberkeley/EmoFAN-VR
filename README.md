@@ -61,18 +61,17 @@ To get a local copy up and running follow these simple example steps.
 The code requires the following Python packages
 
 ```sh
-pathlib version==2.3.5
-numpy version: 1.19.0
+numpy version==1.19.0
 PIL version==7.2.0
-pickle version==0.7.5
-json version==0.9.5
+json version==2.0.9
 imutils version==0.5.4
 face_alignment version==1.3.4
 torch version==1.7.1
 torchvision version==0.8.2
-opencv-python version==4.5.2.52
-scikit-image version==0.16.2
-
+cv2 version==4.5.2
+skimage version==0.16.2
+matplotlib version==3.2.2
+seaborn version==0.10.1
 ```
 
 
