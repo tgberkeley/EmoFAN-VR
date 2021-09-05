@@ -131,9 +131,6 @@ Running the script
 <!-- REFERENCES -->
 ## References
 
-Dijkstra, E. W. (1968). 
-Go to statement considered harmful. 
-Communications of the ACM, 11(3), 147-148.
 
 <a id="1">[1]</a> 
 Toisoul, A., Kossaifi, J., Bulat, A. et al. 
