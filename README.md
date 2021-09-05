@@ -82,7 +82,7 @@ seaborn version==0.10.1
 
 
 3. **AFEW-VA Dataset:**
-      Download all twelve zip files from the [AFEW-VA-database](https://ibug.doc.ic.ac.uk/resources/afew-va-database/)
+      Download all twelve zip files from the [AFEW-VA-database](https://ibug.doc.ic.ac.uk/resources/afew-va-database/). Place all 600 files downloaded from these zip files into the 'data' folder, in a folder named 'AFEW-VA'.
 
  
 
