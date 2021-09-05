@@ -79,7 +79,10 @@ seaborn version==0.10.1
 
 1. There are two models we can run, the original EmoFAN model 'emonet_8.pth' and the new algorithm created in this work 'EmoFAN-VR.pth'
 2. affectnet data
-3. afew_va data
+
+
+3. **AFEW-VA Dataset:**
+      Download all twelve zip files from the [AFEW-VA-database](https://ibug.doc.ic.ac.uk/resources/afew-va-database/)
 
  
 
@@ -143,3 +146,4 @@ Running the script
 [linkedin-url]: https://linkedin.com/in/othneildrew
 [product-screenshot]: images/Image_VR_project.png
 [EmoFAN-VR-AffectNet]: images/EmoFAN-VR_AffectNet.png
+[AFEW-VA-url]: https://ibug.doc.ic.ac.uk/resources/afew-va-database/
