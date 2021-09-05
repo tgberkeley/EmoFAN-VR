@@ -78,11 +78,13 @@ seaborn version==0.10.1
 ### Data and Models
 
 1. There are two models we can run, the original EmoFAN model 'emonet_8.pth' and the new algorithm created in this work 'EmoFAN-VR.pth'
-2. affectnet data
 
-
-3. **AFEW-VA Dataset:**
+2. **AFEW-VA Dataset:**
       Download all twelve zip files from the [AFEW-VA-database](https://ibug.doc.ic.ac.uk/resources/afew-va-database/). Place all 600 files downloaded from these zip files into the 'data' folder, in a folder named 'AFEW-VA'.
+
+3. **AffectNet Dataset:** 
+    To download the [AffectNet-database](http://mohammadmahoor.com/affectnet/), use this link and follow the instructions to access the data. 
+
 
  
 
