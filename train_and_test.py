@@ -69,12 +69,12 @@ transform_image = transforms.Compose([transforms.ToTensor()])
 transform_image_shape_no_flip = DataAugmentor(image_size, image_size)
 
 
-
 print('Loading the data')
-train_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/train_set/', subset='train', n_expression=n_expression,
-                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
+#train_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/train_set/', subset='train', n_expression=n_expression,
+#                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
-test_dataset_no_flip = AFEW_VA(root_path='/vol/bitbucket/tg220/data/AFEW_VA_all/', subset='test', n_expression=n_expression,
+### if wish to run it on AffectNet change to the AffectNet dataloader
+test_dataset_no_flip = AFEW_VA(root_path='/data/AFEW-VA', subset='test', n_expression=n_expression,
                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 
@@ -114,19 +114,10 @@ print("Total number of parameters in the EmoFan: {}".format(params))
 print('\n')
 
 
-
-
 optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate, weight_decay=weight_decay)
 
 
-# 0:Neutral 1:Happy 2:Sad 3:Surprise 4:Fear 5:Disgust 6:Anger 7:Contempt
-# (looking at the VA cirlce we really dont cover the bottom half very well at all)
-#expr_to_valence = torch.tensor([ 0,  0.9, -0.81, 0.42, -0.11,  -0.67,  -0.41, -0.57])
-# issue here is that only 1 negative arousal, so will favour more +ve ones
-#expr_to_arousal = torch.tensor([ 0,  0.16, -0.4, 0.88, 0.79,  0.49,  0.78, 0.66])
-#softm = nn.Softmax(dim=1)
-
-
+#### Discrete emotions: 0:Neutral 1:Happy 2:Sad 3:Surprise 4:Fear 5:Disgust 6:Anger 7:Contempt
 
 ###All code below is for training, uncomment it if you wish to train a model further
 
@@ -140,7 +131,7 @@ optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate, weight_decay=we
 # for epoch in range(1, num_epochs + 1):
 
 #   train_dataloader = DataLoader(train_dataset_no_flip, batch_size=batch_size, shuffle=True, num_workers=n_workers)
-test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
+#   test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
     
 #     net.train()
     
@@ -160,25 +151,18 @@ test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffl
 #         expression = batch_samples['expression'].to(device)
 #         expression = expression.squeeze()
 
-
-
 #         optimizer.zero_grad()
 #         prediction = net(image)
 
 #         pred_expr = prediction['expression']
 
-#         # printing heat maps relative to occluded image
-#         # x = 29
+#         #### Uncomment this to print heat maps of an image
+#         # x = 12 #generic number picked from dataloader
 #         # heatmap = prediction['heatmap']
-#         # #print(heatmap.size())
 #         # heat_1 = heatmap[x,:,:,:]
-#         #
 #         # heat_1 = heat_1.squeeze().detach().cpu().numpy()
-#         #
-#         #
 #         # # sum them so that we can get all landmarks on one heat map
 #         # heat_1 = np.sum(heat_1, axis=0)
-#         #
 #         #
 #         # img = image[x,:,:,:].mul(255).byte()
 #         # img = img.cpu().numpy().transpose((1, 2, 0))
@@ -189,24 +173,9 @@ test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffl
 #         # plt.show()
 #         # sys.exit()
 
-#         # binary cross entrpy loss (for discrete emtions)
+#         #### binary cross entrpy loss (for discrete emtions)
 
 #         #loss_CE = F.cross_entropy(pred_expr, expression)
-
-
-#         ### test on it non_occluded images
-
-#         # pred_expr_soft = softm(pred_expr)
-#         #
-#         # new_val = torch.mul(pred_expr_soft, expr_to_valence)
-#         # expr_val = torch.sum(new_val, dim=1)
-#         #
-#         # new_aro = torch.mul(pred_expr_soft, expr_to_arousal)
-#         # expr_aro = torch.sum(new_aro, dim=1)
-#         #
-#         # prediction_valence = torch.mul(prediction['valence'], 1 - ratio) + torch.mul(expr_val, ratio)
-#         # prediction_arousal = torch.mul(prediction['arousal'], 1 - ratio) + torch.mul(expr_aro, ratio)
-#         #
 
 
 
@@ -218,7 +187,7 @@ test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffl
 
 #         loss_RMSE = F.mse_loss(valence, prediction['valence']) + F.mse_loss(arousal, prediction['arousal'])
 
-#         # shake–shake regularization coefficients α, β and γ
+#         ### shake–shake regularization coefficients α, β and γ
 
 #         alpha = np.random.uniform()
 #         beta = np.random.uniform()
@@ -255,11 +224,12 @@ test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffl
 #     #print(f"CE Loss: {CE_loss_train}")
 
 
-
-#     torch.save(net.state_dict(), os.path.join(model_dir, f'new_with_L2(0.001)_epoch_{epoch}_lr_0.00008_with_dropout.pth'))
+#     torch.save(net.state_dict(), os.path.join(model_dir, f'new_emotion_model.pth'))
     
 
-
+    
+test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
+    
 
 print('START TESTING...')
 net.eval()
@@ -308,12 +278,13 @@ for index, data in enumerate(test_dataloader):
 valence_pred = np.clip(valence_pred, -1.0, 1.0)
 arousal_pred = np.clip(arousal_pred, -1.0, 1.0)
 
-# remove this later, this is only so plot looks good
-vale = np.array([1, -1])
-valence_pred = np.concatenate([valence_pred, vale])
-valence_gts = np.concatenate([valence_gts, vale])
-arousal_pred = np.concatenate([arousal_pred, vale])
-arousal_gts = np.concatenate([arousal_gts, vale])
+
+# # if plotting the distributions below uncomment these lines so plot looks good
+# vale = np.array([1, -1])
+# valence_pred = np.concatenate([valence_pred, vale])
+# valence_gts = np.concatenate([valence_gts, vale])
+# arousal_pred = np.concatenate([arousal_pred, vale])
+# arousal_gts = np.concatenate([arousal_gts, vale])
 
 
 # Squeeze if valence_gts is shape (N,1)
@@ -330,8 +301,6 @@ print(num_correct)
 print(len(expression_gts))
 accuracy = num_correct / len(expression_gts)
 print(accuracy)
-
-
 
 
 ## Uncomment to plot the ground truth and predictions distributions
@@ -356,11 +325,6 @@ print(accuracy)
 # plt.xlim(-1,1)
 # plt.savefig("/vol/bitbucket/tg220/results/predictions_4_AFEW_VA_21.png")
 # plt.draw()
-
-
-
-
-
 
 
 
