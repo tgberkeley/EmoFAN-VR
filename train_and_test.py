@@ -79,8 +79,8 @@ test_dataset_no_flip = AFEW_VA(root_path='/data/AFEW-VA', subset='test', n_expre
 
 
 # Loading the model
-###Here we either use emonet_8.pth or my_model.pth
-model = '34421_epoch_6_lr_0.00008_with_dropout_with_train.pth'
+###Here we either use emonet_8.pth or EmoFAN-VR.pth
+model = 'EmoFAN-VR.pth'
 state_dict_path = Path(__file__).parent.joinpath('pretrained', model)
 
 print(f'Loading the model from {state_dict_path}.')
