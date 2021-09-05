@@ -334,28 +334,28 @@ print(accuracy)
 
 
 
+## Uncomment to plot the ground truth and predictions distributions
+# my_cmap = copy.copy(plt.cm.get_cmap(plt.cm.jet))
+# my_cmap.set_bad(my_cmap(0))
 
-my_cmap = copy.copy(plt.cm.get_cmap(plt.cm.jet))
-my_cmap.set_bad(my_cmap(0))
+# plt.hist2d(valence_gts, arousal_gts, bins=(21, 21), norm=mpl.colors.LogNorm(), cmap=my_cmap)
+# plt.ylim(-1,1)
+# plt.xlim(-1,1)
+# plt.colorbar()
+# plt.xlabel("Valence")
+# plt.ylabel("Arousal")
+# plt.title("Ground Truth Distribution")
+# plt.savefig("/vol/bitbucket/tg220/results/ground_truth_4_AFEW_VA_21.png")
+# plt.draw()
 
-plt.hist2d(valence_gts, arousal_gts, bins=(21, 21), norm=mpl.colors.LogNorm(), cmap=my_cmap)
-plt.ylim(-1,1)
-plt.xlim(-1,1)
-plt.colorbar()
-plt.xlabel("Valence")
-plt.ylabel("Arousal")
-plt.title("Ground Truth Distribution")
-plt.savefig("/vol/bitbucket/tg220/results/ground_truth_4_AFEW_VA_21.png")
-plt.draw()
-
-plt.hist2d(valence_pred, arousal_pred, bins=(21, 21), norm=mpl.colors.LogNorm(), cmap=my_cmap)
-plt.xlabel("Valence")
-plt.ylabel("Arousal")
-plt.title("Predictions Distribution")
-plt.ylim(-1,1)
-plt.xlim(-1,1)
-plt.savefig("/vol/bitbucket/tg220/results/predictions_4_AFEW_VA_21.png")
-plt.draw()
+# plt.hist2d(valence_pred, arousal_pred, bins=(21, 21), norm=mpl.colors.LogNorm(), cmap=my_cmap)
+# plt.xlabel("Valence")
+# plt.ylabel("Arousal")
+# plt.title("Predictions Distribution")
+# plt.ylim(-1,1)
+# plt.xlim(-1,1)
+# plt.savefig("/vol/bitbucket/tg220/results/predictions_4_AFEW_VA_21.png")
+# plt.draw()
 
 
 
