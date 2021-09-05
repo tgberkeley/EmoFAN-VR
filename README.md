@@ -41,7 +41,7 @@ This project covers emotion recognition from facial visual signals using valence
 <!-- PROJECT RESULTS -->
 ## Project Results
 
-We further trained the EmoFAN algorithm (citation) on the AffectNet dataset (citation), with virtual reality occlusions applied around the eye region. 
+We further trained the EmoFAN algorithm [[1]](#1) on the AffectNet dataset (citation), with virtual reality occlusions applied around the eye region. 
 
 <img src="images/EmoFAN-VR_AffectNet.png" width="800" height="420">
 
@@ -130,12 +130,15 @@ Running the script
 
 <!-- REFERENCES -->
 ## References
-<a id="1">[1]</a> 
+
 Dijkstra, E. W. (1968). 
 Go to statement considered harmful. 
 Communications of the ACM, 11(3), 147-148.
 
-
+<a id="1">[1]</a> 
+Toisoul, A., Kossaifi, J., Bulat, A. et al. 
+Estimation of continuous valence and arousal levels from faces in naturalistic conditions. 
+Nat Mach Intell 3, 42–50 (2021).
 
 
 
