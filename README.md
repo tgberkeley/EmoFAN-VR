@@ -41,7 +41,7 @@ This project covers emotion recognition from facial visual signals using valence
 <!-- PROJECT RESULTS -->
 ## Project Results
 
-We further trained the EmoFAN algorithm [[1]](#1) on the AffectNet dataset (citation), with virtual reality occlusions applied around the eye region. 
+We further trained the EmoFAN algorithm [[1]](#1) on the AffectNet dataset [[2]](#2), with virtual reality occlusions applied around the eye region. 
 
 <img src="images/EmoFAN-VR_AffectNet.png" width="800" height="420">
 
@@ -135,10 +135,15 @@ Running the script
 <a id="1">[1]</a> 
 Toisoul, A., Kossaifi, J., Bulat, A. et al. 
 Estimation of continuous valence and arousal levels from faces in naturalistic conditions. 
-Nat Mach Intell 3, 42–50 (2021).
+*Nat Mach Intell* 3, 42–50 (2021).
+
+<a id="2">[2]</a> 
+Mollahosseini, A. et al. 
+“AffectNet: A Database for Facial Expression, Valence, and Arousal Computing in the Wild.” 
+*IEEE Transactions on Affective Computing* 10 (2019): 18-31.
 
 
-
+Kossaifi J, Tzimiropoulos G, Todorovic S, Pantic M. AFEW-VA database for valence and arousal estimation in-the-wild. Image and vision computing. 2017 Sep 1;65:23-36.
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
