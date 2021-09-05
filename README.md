@@ -80,7 +80,10 @@ seaborn version==0.10.1
 1. There are two models we can run, the original EmoFAN model 'emonet_8.pth' and the new algorithm created in this work 'EmoFAN-VR.pth'
 2. affectnet data
 3. afew_va data
-4. 
+
+ 
+
+
 5. Clone the repo
    ```sh
    git clone https://github.com/your_username_/Project-Name.git
@@ -97,6 +100,10 @@ seaborn version==0.10.1
 
 ### Running the Scripts
 
+Running the script
+   ```sh
+   python3 train_and_test.py
+   ```
 
 
 
