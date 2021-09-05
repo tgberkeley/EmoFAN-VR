@@ -77,7 +77,7 @@ seaborn version==0.10.1
 
 ### Data and Models
 
-1. model emonet_8 and my_model
+1. There are two models we can run, the original EmoFAN model 'emonet_8.pth' and the new algorithm created in this work 'EmoFAN-VR.pth'
 2. affectnet data
 3. afew_va data
 4. 
