@@ -27,9 +27,15 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
+This project covers emotion recognition from facial visual signals while the participant wears a virtual reality headset. We use a valence and arousal scale, a multi-dimensional emotion representation. The main contributions of this project are:
+
+* We propose the novel EmoFAN-VR algorithm for emotion detection, trained to solve the partial face problem 
+* We design and record EmoVR, a novel dataset of participants displaying spontaneous emotion expressions in response to videos watched in a virtual reality environment
 
 
 
+
+This video shows the valence and arousal predictions of the EmoFAN-VR algorithm on a participant wearing a virtual reality headset.
 https://user-images.githubusercontent.com/64492814/132563921-7b3e3c1b-c5fd-4fef-906f-3e08d4372d7d.mov
 
 
@@ -37,10 +43,6 @@ https://user-images.githubusercontent.com/64492814/132563921-7b3e3c1b-c5fd-4fef-
 
 
 
-This project covers emotion recognition from facial visual signals using valence and arousal, a multi-dimensional emotion representation. The main contributions of this project are:
-
-* We propose the novel EmoFAN-VR algorithm for emotion detection, trained to solve the partial face problem 
-* We design and record EmoVR, a novel dataset of participants displaying spontaneous emotion expressions in response to videos watched in a virtual reality environment
 
 
 
