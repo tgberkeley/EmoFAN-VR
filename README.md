@@ -28,7 +28,11 @@
 ## About The Project
 
 
-<img width="946" alt="best results so far from 34507 (VA+CE+landmarks ignored)" src="https://user-images.githubusercontent.com/64492814/132557396-9cf509d0-c988-40f8-873e-0b86bddbeeac.png">
+
+
+https://user-images.githubusercontent.com/64492814/132557463-dbdf0ce7-8a91-4938-bb5d-5b8a52461170.mp4
+
+
 
 
 This project covers emotion recognition from facial visual signals using valence and arousal, a multi-dimensional emotion representation. The main contributions of this project are:
