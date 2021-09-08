@@ -33,9 +33,14 @@ This project covers emotion recognition from facial visual signals while the par
 * We design and record EmoVR, a novel dataset of participants displaying spontaneous emotion expressions in response to videos watched in a virtual reality environment
 
 
-
-
 This video shows the valence and arousal predictions of the EmoFAN-VR algorithm on a participant wearing a virtual reality headset.
+
+
+
+
+
+
+
 https://user-images.githubusercontent.com/64492814/132563921-7b3e3c1b-c5fd-4fef-906f-3e08d4372d7d.mov
 
 
