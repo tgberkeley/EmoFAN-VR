@@ -292,15 +292,13 @@ valence_gts = np.squeeze(valence_gts)
 arousal_gts = np.squeeze(arousal_gts)
 expression_gts = np.squeeze(expression_gts)
 
-print(expression_pred)
-print(expression_gts)
-expression_pred = np.argmax(expression_pred, axis=1)
-print(expression_pred)
-num_correct = (expression_pred == expression_gts).sum()
-print(num_correct)
-print(len(expression_gts))
-accuracy = num_correct / len(expression_gts)
-print(accuracy)
+#print(expression_pred)
+#print(expression_gts)
+#expression_pred = np.argmax(expression_pred, axis=1)
+#print(expression_pred)
+#num_correct = (expression_pred == expression_gts).sum()
+#print(num_correct)
+#print(len(expression_gts))
 
 
 ## Uncomment to plot the ground truth and predictions distributions
