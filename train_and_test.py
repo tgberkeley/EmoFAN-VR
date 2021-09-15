@@ -74,10 +74,9 @@ print('Loading the data')
 #                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 ### if wish to run it on AffectNet change to the AffectNet dataloader
-test_dataset_no_flip = AFEW_VA(root_path='/vol/bitbucket/tg220/data/AFEW_VA_all/', subset='test', n_expression=n_expression,
+test_dataset_no_flip = AFEW_VA(root_path='data/AFEW-VA/', subset='test', n_expression=n_expression,
                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
-#data/AFEW-VA/
 
 # Loading the model
 ###Here we either use emonet_8.pth (the original EmoFAN algorithm) or EmoFAN-VR.pth
