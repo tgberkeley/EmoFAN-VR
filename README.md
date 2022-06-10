@@ -1,4 +1,4 @@
-[Link to published paper associated with this code.](https://ieeexplore.ieee.org/document/9750297)
+[Link to published paper associated with this code](https://ieeexplore.ieee.org/document/9750297)
 
 <!-- TABLE OF CONTENTS -->
 <details open="open">
