@@ -104,12 +104,10 @@ def VR_patch(x, shapes, VR_dim=[20, 10]):
               shapes: ndarray with shape (number of images, 68, 2), landmark coordinates
               VR_dim: VR headset dimension [w, h]
     '''
-    #len_data = len(x)
-    #for i in range(len_data):
     image = x
-
-    VR_dim_scaled = scale_VR(VR_dim, shapes)
+    
     # compute VR headset position on the face
+    VR_dim_scaled = scale_VR(VR_dim, shapes)
     # determine each eye's centre
     rightEyeCenter, leftEyeCenter = find_EyeCentre(shapes)
     # find the centre between two eyes
@@ -120,5 +118,5 @@ def VR_patch(x, shapes, VR_dim=[20, 10]):
     VR_pts_rotated = rotate_pts(rightEyeCenter, leftEyeCenter, VR_pts, midpoint)
     # overlay VR headset patch on the image
     cv2.fillPoly(image, [np.int32(tuple(VR_pts_rotated))], 1, 255)
-    # cv2_imshow(image)
+    
     return image
