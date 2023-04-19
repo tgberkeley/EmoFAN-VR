@@ -18,9 +18,7 @@ from Face_Occlusion import VR_patch
 import json
 
 
-#### to run some tests on the landmarks
 face_detector_kwargs = {
-    # increase_min_score_thresh to minimise the chances of picking up 2 faces
     "min_score_thresh" : 0.80,
     "min_suppression_threshold" : 0.3
 }
@@ -28,13 +26,6 @@ face_detector_kwargs = {
 fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cpu',
                                   flip_input=False, face_detector='blazeface',
                                   face_detector_kwargs=face_detector_kwargs)
-
-
-
-
-
-
-
 
 
 class AffectNet(Dataset):
@@ -47,45 +38,7 @@ class AffectNet(Dataset):
         self.transform_image_shape = transform_image_shape
         self.transform_image = transform_image
         self.verbose = verbose
-           
-        ###If do not have access to the json files below but do have access to the AffectNet ".npy" 
-        ###files then uncomment code below and ignore opening json file code'''
-        # all_data = {}
-        #
-        # all_files = os.listdir(self.root_path.joinpath('images/'))
-        #
-        #
-        # if ".DS_Store" in all_files:
-        #     all_files.remove(".DS_Store")
-        #
-        #
-        # for file in all_files:
-        #     image_name = os.path.splitext(file)[0]
-        #
-        #     file_path = str(self.root_path) + "/annotations/" + image_name
-        #
-        #     arousal = np.load(file_path + '_aro.npy')
-        #     valence = np.load(file_path + '_val.npy')
-        #     expression = np.load(file_path + '_exp.npy')
-        #
-        #     landmarks = np.load(file_path + '_lnd.npy')
-        #     landmarks = np.reshape(landmarks, (-1, 2))
-        #
-        #     image_file = str(self.root_path) + "/images/" + file
-        #
-        #     image = io.imread(image_file)
-        #     image = np.ascontiguousarray(image)
-        #     predicted_landmarks = fa.get_landmarks(image)
-        #     predicted_landmarks = np.array(predicted_landmarks).squeeze()
-        #
-        #     all_data[image_name] = {'valence': valence.item(),
-        #                             'arousal': arousal.item(),
-        #                             'expression': expression.item(),
-        #                             'gt_landmarks': landmarks,
-        #                             'my_landmarks': predicted_landmarks}
-        #
-        #
-
+        
         
         # json file contain landmarks detected in preprocessing
         if subset == 'train':
@@ -98,8 +51,6 @@ class AffectNet(Dataset):
         with open(file) as read_file:
             all_data = json.load(read_file)
 
-            
-        print(len(all_data.keys()))
         self.all_data = all_data
         self.image_keys = list(self.all_data.keys())
 
@@ -125,8 +76,8 @@ class AffectNet(Dataset):
         arousal = torch.tensor([float(sample_image['arousal'])], dtype=torch.float32)
         expression = torch.tensor([int(sample_image['expression'])], dtype=torch.long)
         
-        ###in Affectnet if -2 given as label it means label unknown therefore we give
-        ###this a value of 0
+        # in Affectnet if -2 given as label it means label unknown therefore we give
+        # this a value of 0
         if valence == -2:
             valence = 0
         if arousal == -2:
@@ -164,27 +115,10 @@ class AffectNet(Dataset):
                 image, landmarks = self.transform_image_shape(image, bb=bounding_box)
             # Fix for PyTorch currently not supporting negative stric
             image = np.ascontiguousarray(image)
-               
-           ###uncomment this code to see the output of the above operations
-            #img = Image.fromarray(image, 'RGB')
-            #img.show()
-            #sys.exit()
-               
         
         if self.transform_image is not None:
             image = self.transform_image(image)
 
 
         return dict(valence=valence, arousal=arousal, expression=expression, image=image, au=[])
-
-
-
-
-
-
-
-
-
-
-
-
+    
