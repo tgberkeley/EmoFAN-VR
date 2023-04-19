@@ -27,7 +27,8 @@ from emonet.metrics import CCCLoss, CCC_score
 rnd_seed = 42
 
 torch.backends.cudnn.benchmark = True
-
+train = False
+plot = False
 
 # Parameters of the experiments
 n_expression=8
@@ -70,16 +71,16 @@ transform_image_shape_no_flip = DataAugmentor(image_size, image_size)
 
 
 print('Loading the data')
-#train_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/train_set/', subset='train', n_expression=n_expression,
-#                                  transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
-
-### if wish to run it on AffectNet change to the AffectNet dataloader
-test_dataset_no_flip = AFEW_VA(root_path='data/AFEW-VA/', subset='test', n_expression=n_expression,
-                                 transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
+if train:
+    train_dataset_no_flip = AffectNet(root_path='/vol/bitbucket/tg220/data/train_set/', subset='train', n_expression=n_expression,
+                                     transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
+else:
+    test_dataset_no_flip = AFEW_VA(root_path='data/AFEW-VA/', subset='test', n_expression=n_expression,
+                                     transform_image_shape=transform_image_shape_no_flip, transform_image=transform_image)
 
 
 # Loading the model
-###Here we either use emonet_8.pth (the original EmoFAN algorithm) or EmoFAN-VR.pth
+
 model = 'EmoFAN-VR.pth'
 state_dict_path = Path(__file__).parent.joinpath('pretrained', model)
 
@@ -100,15 +101,6 @@ net = EmoNet(n_expression=n_expression).to(device)
 net.load_state_dict(state_dict, strict=False)
 
 
-###Uncomment these to change which parameters of the model we train
-# for model_block in list(net.children())[10:20]:
-#     for param in model_block.parameters():
-#         param.requires_grad = True
-
-###Uncomment these to view all the parameters of the model
-# for k,v in net.named_parameters():
-#    print('{}: {}'.format(k, v.requires_grad))
-
 params = sum(p.numel() for p in net.parameters() if p.requires_grad)
 print("Total number of parameters in the EmoFan: {}".format(params))
 print('\n')
@@ -117,114 +109,84 @@ print('\n')
 optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate, weight_decay=weight_decay)
 
 
-#### Discrete emotions: 0:Neutral 1:Happy 2:Sad 3:Surprise 4:Fear 5:Disgust 6:Anger 7:Contempt
+if train:
+    total_loss_train = []
+    CCC_loss_train = []
+    PCC_loss_train = []
+    RMSE_loss_train = []
+    CE_loss_train = []
 
-###All code below is for training, uncomment it if you wish to train a model further
+    print('START TRAINING...')
+    for epoch in range(1, num_epochs + 1):
 
-# total_loss_train = []
-# CCC_loss_train = []
-# PCC_loss_train = []
-# RMSE_loss_train = []
-# CE_loss_train = []
+      train_dataloader = DataLoader(train_dataset_no_flip, batch_size=batch_size, shuffle=True, num_workers=n_workers)
+      test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
 
-# print('START TRAINING...')
-# for epoch in range(1, num_epochs + 1):
+        net.train()
 
-#   train_dataloader = DataLoader(train_dataset_no_flip, batch_size=batch_size, shuffle=True, num_workers=n_workers)
-#   test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
-    
-#     net.train()
-    
-#     total_loss_epoch = 0
-#     CCC_loss_epoch = 0
-#     PCC_loss_epoch = 0
-#     RMSE_loss_epoch = 0
-#     CE_loss_epoch = 0
-#     # Training
-#     for batch_idx, batch_samples in enumerate(train_dataloader):
-#         #print(batch_idx)
-#         image = batch_samples['image'].to(device)
-#         valence = batch_samples['valence'].to(device)
-#         valence = valence.squeeze()
-#         arousal = batch_samples['arousal'].to(device)
-#         arousal = arousal.squeeze()
-#         expression = batch_samples['expression'].to(device)
-#         expression = expression.squeeze()
+        total_loss_epoch = 0
+        CCC_loss_epoch = 0
+        PCC_loss_epoch = 0
+        RMSE_loss_epoch = 0
+        CE_loss_epoch = 0
+        # Training
+        for batch_idx, batch_samples in enumerate(train_dataloader):
+            #print(batch_idx)
+            image = batch_samples['image'].to(device)
+            valence = batch_samples['valence'].to(device)
+            valence = valence.squeeze()
+            arousal = batch_samples['arousal'].to(device)
+            arousal = arousal.squeeze()
+            expression = batch_samples['expression'].to(device)
+            expression = expression.squeeze()
 
-#         optimizer.zero_grad()
-#         prediction = net(image)
+            optimizer.zero_grad()
+            prediction = net(image)
 
-#         pred_expr = prediction['expression']
+            pred_expr = prediction['expression']
 
-#         #### Uncomment this to print heat maps of an image
-#         # x = 12 #generic number picked from dataloader
-#         # heatmap = prediction['heatmap']
-#         # heat_1 = heatmap[x,:,:,:]
-#         # heat_1 = heat_1.squeeze().detach().cpu().numpy()
-#         # # sum them so that we can get all landmarks on one heat map
-#         # heat_1 = np.sum(heat_1, axis=0)
-#         #
-#         # img = image[x,:,:,:].mul(255).byte()
-#         # img = img.cpu().numpy().transpose((1, 2, 0))
-#         #
-#         # image = Image.fromarray(img, 'RGB')
-#         # image.show()
-#         # Tensor_a = sns.heatmap(heat_1, linewidth=0.2)
-#         # plt.show()
-#         # sys.exit()
+            CCC_valence, PCC_valence = CCC_Loss(valence, prediction['valence'])
+            CCC_arousal, PCC_arousal = CCC_Loss(arousal, prediction['arousal'])
 
-#         #### binary cross entrpy loss (for discrete emtions)
+            loss_PCC = 1 - ((PCC_valence + PCC_arousal) / 2)
+            loss_CCC = 1 - ((CCC_valence + CCC_arousal) / 2)
 
-#         #loss_CE = F.cross_entropy(pred_expr, expression)
+            loss_RMSE = F.mse_loss(valence, prediction['valence']) + F.mse_loss(arousal, prediction['arousal'])
 
+            # shake–shake regularization coefficients α, β and γ
 
+            alpha = np.random.uniform()
+            beta = np.random.uniform()
+            gamma = np.random.uniform()
+            total = alpha + beta + gamma
 
-#         CCC_valence, PCC_valence = CCC_Loss(valence, prediction['valence'])
-#         CCC_arousal, PCC_arousal = CCC_Loss(arousal, prediction['arousal'])
+            total_loss = torch.mul(loss_CCC, alpha/total) + torch.mul(loss_PCC, beta/total) + \
+                         torch.mul(loss_RMSE, gamma/total) #+  loss_CE
 
-#         loss_PCC = 1 - ((PCC_valence + PCC_arousal) / 2)
-#         loss_CCC = 1 - ((CCC_valence + CCC_arousal) / 2)
+            total_loss.backward()
 
-#         loss_RMSE = F.mse_loss(valence, prediction['valence']) + F.mse_loss(arousal, prediction['arousal'])
+            optimizer.step()
 
-#         ### shake–shake regularization coefficients α, β and γ
+            total_loss_epoch += total_loss.item()
+            CCC_loss_epoch += loss_CCC.item()
+            PCC_loss_epoch += loss_PCC.item()
+            RMSE_loss_epoch += loss_RMSE.item()
+            
 
-#         alpha = np.random.uniform()
-#         beta = np.random.uniform()
-#         gamma = np.random.uniform()
-#         total = alpha + beta + gamma
-
-#         total_loss = torch.mul(loss_CCC, alpha/total) + torch.mul(loss_PCC, beta/total) + \
-#                      torch.mul(loss_RMSE, gamma/total) #+  loss_CE
-
-#         total_loss.backward()
-
-#         optimizer.step()
-
-#         total_loss_epoch += total_loss.item()
-#         CCC_loss_epoch += loss_CCC.item()
-#         PCC_loss_epoch += loss_PCC.item()
-#         RMSE_loss_epoch += loss_RMSE.item()
-#         #CE_loss_epoch += loss_CE.item()
-
-#     total_loss_train.append(total_loss_epoch)
-#     CCC_loss_train.append(CCC_loss_epoch)
-#     PCC_loss_train.append(PCC_loss_epoch)
-#     RMSE_loss_train.append(RMSE_loss_epoch)
-#     #CE_loss_train.append(CE_loss_epoch)
+        total_loss_train.append(total_loss_epoch)
+        CCC_loss_train.append(CCC_loss_epoch)
+        PCC_loss_train.append(PCC_loss_epoch)
+        RMSE_loss_train.append(RMSE_loss_epoch)
+        
 
 
-#     print('+ TRAINING \tEpoch: {} \tLoss: {:.6f}'.format(epoch, total_loss_epoch),
-#           f'\tCCC: {CCC_loss_epoch}, \tPCC: {PCC_loss_epoch}, \tRMSE Loss: {RMSE_loss_epoch}',
-#           f'\tCE Loss: {CE_loss_epoch}')
-#     #print(f"Total Loss: {total_loss_train}")
-#     print(f"CCC Loss: {CCC_loss_train}")
-#     #print(f"PCC Loss: {PCC_loss_train}")
-#     print(f"RMSE Loss: {RMSE_loss_train}")
-#     #print(f"CE Loss: {CE_loss_train}")
-
-
-#     torch.save(net.state_dict(), os.path.join(model_dir, f'new_emotion_model.pth'))
+        print('+ TRAINING \tEpoch: {} \tLoss: {:.6f}'.format(epoch, total_loss_epoch),
+              f'\tCCC: {CCC_loss_epoch}, \tPCC: {PCC_loss_epoch}, \tRMSE Loss: {RMSE_loss_epoch}',
+              f'\tCE Loss: {CE_loss_epoch}')
+        print(f"CCC Loss: {CCC_loss_train}")
+        print(f"RMSE Loss: {RMSE_loss_train}")
+      
+        torch.save(net.state_dict(), os.path.join(model_dir, f'new_emotion_model.pth'))
     
 
     
@@ -236,7 +198,6 @@ net.eval()
 
 
 for index, data in enumerate(test_dataloader):
-    #print(index)
     images = data['image'].to(device)
     valence = data.get('valence', None)
     arousal = data.get('arousal', None)
@@ -278,51 +239,33 @@ for index, data in enumerate(test_dataloader):
 valence_pred = np.clip(valence_pred, -1.0, 1.0)
 arousal_pred = np.clip(arousal_pred, -1.0, 1.0)
 
-
-# # if plotting the distributions below uncomment these lines so plot looks good
-# vale = np.array([1, -1])
-# valence_pred = np.concatenate([valence_pred, vale])
-# valence_gts = np.concatenate([valence_gts, vale])
-# arousal_pred = np.concatenate([arousal_pred, vale])
-# arousal_gts = np.concatenate([arousal_gts, vale])
-
-
-# Squeeze if valence_gts is shape (N,1)
 valence_gts = np.squeeze(valence_gts)
 arousal_gts = np.squeeze(arousal_gts)
 expression_gts = np.squeeze(expression_gts)
 
-#print(expression_pred)
-#print(expression_gts)
-#expression_pred = np.argmax(expression_pred, axis=1)
-#print(expression_pred)
-#num_correct = (expression_pred == expression_gts).sum()
-#print(num_correct)
-#print(len(expression_gts))
 
+if plot:
+    my_cmap = copy.copy(plt.cm.get_cmap(plt.cm.jet))
+    my_cmap.set_bad(my_cmap(0))
 
-## Uncomment to plot the ground truth and predictions distributions
-# my_cmap = copy.copy(plt.cm.get_cmap(plt.cm.jet))
-# my_cmap.set_bad(my_cmap(0))
+    plt.hist2d(valence_gts, arousal_gts, bins=(21, 21), norm=mpl.colors.LogNorm(), cmap=my_cmap)
+    plt.ylim(-1,1)
+    plt.xlim(-1,1)
+    plt.colorbar()
+    plt.xlabel("Valence")
+    plt.ylabel("Arousal")
+    plt.title("Ground Truth Distribution")
+    plt.savefig("/vol/bitbucket/tg220/results/ground_truth_4_AFEW_VA_21.png")
+    plt.draw()
 
-# plt.hist2d(valence_gts, arousal_gts, bins=(21, 21), norm=mpl.colors.LogNorm(), cmap=my_cmap)
-# plt.ylim(-1,1)
-# plt.xlim(-1,1)
-# plt.colorbar()
-# plt.xlabel("Valence")
-# plt.ylabel("Arousal")
-# plt.title("Ground Truth Distribution")
-# plt.savefig("/vol/bitbucket/tg220/results/ground_truth_4_AFEW_VA_21.png")
-# plt.draw()
-
-# plt.hist2d(valence_pred, arousal_pred, bins=(21, 21), norm=mpl.colors.LogNorm(), cmap=my_cmap)
-# plt.xlabel("Valence")
-# plt.ylabel("Arousal")
-# plt.title("Predictions Distribution")
-# plt.ylim(-1,1)
-# plt.xlim(-1,1)
-# plt.savefig("/vol/bitbucket/tg220/results/predictions_4_AFEW_VA_21.png")
-# plt.draw()
+    plt.hist2d(valence_pred, arousal_pred, bins=(21, 21), norm=mpl.colors.LogNorm(), cmap=my_cmap)
+    plt.xlabel("Valence")
+    plt.ylabel("Arousal")
+    plt.title("Predictions Distribution")
+    plt.ylim(-1,1)
+    plt.xlim(-1,1)
+    plt.savefig("/vol/bitbucket/tg220/results/predictions_4_AFEW_VA_21.png")
+    plt.draw()
 
 
 
