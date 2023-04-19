@@ -34,7 +34,6 @@ plot = False
 n_expression=8
 batch_size = 32
 n_workers = 0
-# device = 'cuda:0'
 image_size = 256
 subset = 'train'
 metrics_valence_arousal = {'CCC': CCC, 'PCC': PCC, 'RMSE': RMSE, 'SAGR': SAGR}
@@ -48,7 +47,7 @@ CCC_Loss = CCCLoss(digitize_num=1)
 num_epochs = 10
 
 
-cuda_dev = '0'  # GPU device 0 (can be changed if multiple GPUs are available)
+cuda_dev = '0'
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:" + cuda_dev if use_cuda else "cpu")
 print('Device: ' + str(device))
@@ -100,14 +99,11 @@ if model == 'emonet_8.pth':
 net = EmoNet(n_expression=n_expression).to(device)
 net.load_state_dict(state_dict, strict=False)
 
-
 params = sum(p.numel() for p in net.parameters() if p.requires_grad)
 print("Total number of parameters in the EmoFan: {}".format(params))
 print('\n')
 
-
 optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate, weight_decay=weight_decay)
-
 
 if train:
     total_loss_train = []
@@ -179,7 +175,6 @@ if train:
         RMSE_loss_train.append(RMSE_loss_epoch)
         
 
-
         print('+ TRAINING \tEpoch: {} \tLoss: {:.6f}'.format(epoch, total_loss_epoch),
               f'\tCCC: {CCC_loss_epoch}, \tPCC: {PCC_loss_epoch}, \tRMSE Loss: {RMSE_loss_epoch}',
               f'\tCE Loss: {CE_loss_epoch}')
@@ -187,8 +182,7 @@ if train:
         print(f"RMSE Loss: {RMSE_loss_train}")
       
         torch.save(net.state_dict(), os.path.join(model_dir, f'new_emotion_model.pth'))
-    
-
+  
     
 test_dataloader = DataLoader(test_dataset_no_flip, batch_size=batch_size, shuffle=False, num_workers=n_workers)
     
